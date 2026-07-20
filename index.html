@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>4 Horsemanship Program — Assessment & Game Plan</title>
+<style>
+:root{
+  --am:#C8952A;--amd:#9a7220;--alt:#e0ab44;
+  --dk:#18130e;--card:#221a11;--card2:#2d2318;--card3:#352a1c;
+  --bdr:#3d3024;--tx:#f0e8d8;--mu:#8a7a62;
+  --gn:#5c8f3a;--rd:#c44444;--bl:#5a7e9a;--sg:#7a9a58;
+  --gw:#8a6a3a;--ri:#6a8a5a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--dk);color:var(--tx);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;padding-bottom:60px}
+a{color:var(--am);text-decoration:none}
+h1,h2,h3{font-weight:600}
+
+/* HEADER */
+.hdr{background:var(--card);border-bottom:2px solid var(--am);padding:18px 24px;display:flex;align-items:center;gap:16px}
+.hdr-icon{width:48px;height:48px;flex-shrink:0}
+.hdr-title{font-size:1.4rem;font-weight:700;color:var(--am)}
+.hdr-sub{font-size:.8rem;color:var(--mu);margin-top:2px}
+
+/* STEP BAR */
+.steps{display:flex;gap:0;padding:0 24px;background:var(--card2);border-bottom:1px solid var(--bdr)}
+.step{flex:1;text-align:center;padding:14px 8px;font-size:.75rem;color:var(--mu);position:relative;cursor:default;border-bottom:3px solid transparent}
+.step.active{color:var(--am);border-bottom-color:var(--am);font-weight:600}
+.step.done{color:var(--sg)}
+.step-num{display:inline-block;width:20px;height:20px;border-radius:50%;background:var(--bdr);color:var(--mu);font-size:.7rem;line-height:20px;margin-right:6px}
+.step.active .step-num{background:var(--am);color:#000}
+.step.done .step-num{background:var(--sg);color:#fff}
+
+/* PANELS */
+.panel{display:none;max-width:900px;margin:0 auto;padding:28px 24px}
+.panel.active{display:block}
+
+/* SECTION LABELS */
+.sec-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--am);font-weight:700;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--bdr)}
+.sec-block{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:20px;margin-bottom:20px}
+
+/* FORM ELEMENTS */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-row.three{grid-template-columns:1fr 1fr 1fr}
+.form-row.one{grid-template-columns:1fr}
+label{display:block;font-size:.8rem;color:var(--mu);margin-bottom:5px}
+input,select,textarea{width:100%;background:var(--card2);border:1px solid var(--bdr);color:var(--tx);padding:10px 12px;border-radius:6px;font-size:.9rem;font-family:inherit;outline:none;transition:border .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--am)}
+textarea{resize:vertical;min-height:80px}
+select option{background:var(--card2)}
+
+/* CARD SELECTS */
+.card-select{display:grid;gap:10px}
+.card-select.two{grid-template-columns:1fr 1fr}
+.card-select.four{grid-template-columns:1fr 1fr 1fr 1fr}
+.cs-opt{background:var(--card2);border:2px solid var(--bdr);border-radius:8px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center}
+.cs-opt:hover{border-color:var(--am);background:var(--card3)}
+.cs-opt.sel{border-color:var(--am);background:var(--card3)}
+.cs-opt .cs-icon{font-size:1.6rem;display:block;margin-bottom:4px}
+.cs-opt .cs-title{font-size:.85rem;font-weight:600;display:block;color:var(--tx)}
+.cs-opt .cs-desc{font-size:.72rem;color:var(--mu);margin-top:3px;display:block}
+
+/* SKILL ASSESSMENT */
+.skill-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.skill-card{background:var(--card2);border:1px solid var(--bdr);border-radius:8px;padding:14px;transition:border .2s}
+.skill-card.rated{border-color:var(--am)42}
+.sk-cat{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:4px}
+.sk-cat.gw{color:var(--gw)}
+.sk-cat.ri{color:var(--ri)}
+.sk-name{font-size:.88rem;font-weight:600;margin-bottom:3px}
+.sk-desc{font-size:.72rem;color:var(--mu);margin-bottom:10px;line-height:1.4}
+.sk-ratings{display:flex;gap:6px}
+.sk-btn{flex:1;background:var(--card3);border:1px solid var(--bdr);color:var(--mu);font-size:.75rem;padding:6px 4px;border-radius:5px;cursor:pointer;text-align:center;transition:all .2s;font-family:inherit}
+.sk-btn:hover{border-color:var(--am);color:var(--tx)}
+.sk-btn.sel1{background:#c4444422;border-color:#c44444;color:#e07777;font-weight:600}
+.sk-btn.sel2{background:#C8952A22;border-color:#C8952A;color:#e0ab44;font-weight:600}
+.sk-btn.sel3{background:#5a7e9a22;border-color:#5a7e9a;color:#7aaac8;font-weight:600}
+.sk-btn.sel4{background:#5c8f3a22;border-color:#5c8f3a;color:#7ab85a;font-weight:600}
+.sk-btn .sr-num{display:block;font-size:1rem;font-weight:700}
+.sk-btn .sr-lbl{display:block;font-size:.65rem;margin-top:1px}
+
+/* GROUP HEADERS */
+.grp-hdr{display:flex;align-items:center;gap:10px;padding:10px 0;margin-bottom:10px}
+.grp-badge{padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.grp-badge.gw{background:#8a6a3a22;border:1px solid #8a6a3a;color:#c89a60}
+.grp-badge.ri{background:#6a8a5a22;border:1px solid #6a8a5a;color:#8aba78}
+.grp-line{flex:1;height:1px;background:var(--bdr)}
+
+/* GOALS STEP */
+.focus-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.focus-pill{padding:6px 14px;border-radius:20px;font-size:.78rem;border:1px solid var(--bdr);color:var(--mu);cursor:default}
+.focus-pill.low{border-color:#c44444;color:#e07777;background:#c4444411}
+.focus-pill.mid{border-color:var(--am);color:var(--alt)}
+.goal-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.goal-card{background:var(--card2);border:2px solid var(--bdr);border-radius:8px;padding:12px;cursor:pointer;text-align:center;transition:all .2s}
+.goal-card:hover{border-color:var(--am)80}
+.goal-card.sel{border-color:var(--am);background:var(--card3)}
+.goal-card .g-icon{font-size:1.5rem;display:block;margin-bottom:5px}
+.goal-card .g-title{font-size:.82rem;font-weight:600}
+.goal-card .g-desc{font-size:.7rem;color:var(--mu);margin-top:3px}
+.len-grid{display:flex;gap:10px}
+.len-opt{flex:1;background:var(--card2);border:2px solid var(--bdr);border-radius:8px;padding:10px;cursor:pointer;text-align:center;font-size:.82rem;transition:all .2s}
+.len-opt:hover{border-color:var(--am)80}
+.len-opt.sel{border-color:var(--am);background:var(--card3);font-weight:600;color:var(--am)}
+
+/* SCHEDULE PREVIEW */
+.sched-preview{background:var(--card3);border:1px solid var(--bdr);border-radius:8px;padding:14px;margin-top:12px}
+.sched-ratio{display:flex;gap:12px;margin-bottom:10px}
+.ratio-bar{flex:1}
+.ratio-lbl{font-size:.72rem;margin-bottom:4px}
+.ratio-track{height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
+.ratio-fill-r{height:100%;background:var(--ri);border-radius:4px}
+.ratio-fill-g{height:100%;background:var(--gw);border-radius:4px}
+.sched-days{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.sched-day{padding:4px 10px;border-radius:6px;font-size:.72rem;font-weight:600}
+.sched-day.ride{background:#6a8a5a22;border:1px solid #6a8a5a;color:#8aba78}
+.sched-day.grnd{background:#8a6a3a22;border:1px solid #8a6a3a;color:#c89a60}
+.sched-day.rest{background:var(--card2);border:1px solid var(--bdr);color:var(--mu)}
+
+/* GAME PLAN */
+.plan-header{background:linear-gradient(135deg,var(--card3),var(--card2));border:1px solid var(--am)40;border-radius:10px;padding:20px;margin-bottom:20px}
+.plan-name{font-size:1.1rem;font-weight:700;color:var(--am);margin-bottom:4px}
+.plan-meta{font-size:.8rem;color:var(--mu)}
+.plan-ratio{display:flex;gap:20px;margin-top:12px;flex-wrap:wrap}
+.pr-item{text-align:center}
+.pr-pct{font-size:1.5rem;font-weight:700}
+.pr-pct.ride{color:var(--ri)}
+.pr-pct.grnd{color:#c89a60}
+.pr-lbl{font-size:.7rem;color:var(--mu)}
+.pr-divider{width:1px;background:var(--bdr)}
+
+/* WEEK TABS */
+.week-tabs{display:flex;gap:6px;margin-bottom:16px}
+.wtab{flex:1;background:var(--card2);border:1px solid var(--bdr);color:var(--mu);padding:10px;border-radius:8px;cursor:pointer;text-align:center;font-size:.82rem;font-family:inherit;transition:all .2s}
+.wtab:hover{border-color:var(--am)80}
+.wtab.active{background:var(--card3);border-color:var(--am);color:var(--am);font-weight:600}
+.week-panel{display:none}
+.week-panel.active{display:block}
+
+/* WEEK CONTENT */
+.wk-theme-bar{background:linear-gradient(90deg,var(--card3),var(--card2));border-left:4px solid var(--am);padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:16px}
+.wk-num-small{font-size:.7rem;color:var(--mu);text-transform:uppercase;letter-spacing:.1em}
+.wk-theme-title{font-size:1rem;font-weight:700;color:var(--tx);margin-top:2px}
+.wk-focus{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.wk-focus-tag{font-size:.7rem;padding:3px 10px;border-radius:12px;background:var(--am)18;border:1px solid var(--am)50;color:var(--alt)}
+.wk-focus-tag.weak{background:#c4444418;border-color:#c4444450;color:#e07777}
+
+.session-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.session-card{border-radius:8px;padding:14px}
+.session-card.gw{background:#2a1f0e;border:1px solid #8a6a3a}
+.session-card.ride{background:#0e1e14;border:1px solid #4a7a4a}
+.session-card.htrainer{background:#1a1e30;border:1px solid #5a6a9a}
+.session-card.howner{background:#141f26;border:1px solid #4a8a9a}
+.daily-card{background:var(--card3);border:1px solid var(--am)40;border-radius:8px;padding:14px 16px;margin-bottom:16px}
+.daily-card .sess-title{color:var(--am)}
+.sess-hdr{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.sess-icon{font-size:1rem}
+.sess-title{font-size:.85rem;font-weight:600}
+.sess-dur{font-size:.7rem;color:var(--mu)}
+.sess-sub{font-size:.7rem;color:var(--mu);margin-bottom:10px;font-style:italic}
+.check-list{list-style:none}
+.check-list li{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--bdr)18;font-size:.78rem;line-height:1.4;cursor:pointer;transition:opacity .2s}
+.check-list li:last-child{border-bottom:none}
+.check-list li.done{opacity:.5;text-decoration:line-through}
+.chk{width:16px;height:16px;border:1px solid var(--bdr);border-radius:3px;flex-shrink:0;margin-top:1px;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.chk.checked{background:var(--am);border-color:var(--am)}
+.chk.checked::after{content:'✓';font-size:.6rem;color:#000;font-weight:900}
+.sess-ref{font-size:.68rem;color:var(--mu);margin-top:8px;border-top:1px solid var(--bdr)30;padding-top:6px;font-style:italic}
+.sess-ref strong{color:var(--am);font-style:normal}
+
+/* MILESTONE */
+.milestone-card{background:var(--card3);border:1px solid var(--am)40;border-radius:8px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px}
+.ms-icon{font-size:1.2rem}
+.ms-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--am);font-weight:700}
+.ms-text{font-size:.82rem;color:var(--tx);margin-top:2px}
+
+/* RESOURCE CARDS */
+.res-section{margin-top:8px}
+.res-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
+.res-card{background:var(--card2);border:1px solid var(--bdr);border-radius:8px;padding:12px}
+.res-icon{font-size:1.2rem;margin-bottom:6px;display:block}
+.res-title{font-size:.78rem;font-weight:700;color:var(--tx)}
+.res-source{font-size:.68rem;color:var(--am);margin-top:2px}
+.res-tip{font-size:.7rem;color:var(--mu);margin-top:6px;line-height:1.4}
+
+/* BUTTONS */
+.btn{padding:11px 28px;border-radius:7px;font-size:.88rem;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .2s}
+.btn-primary{background:var(--am);color:#000}
+.btn-primary:hover{background:var(--alt)}
+.btn-secondary{background:var(--card2);color:var(--tx);border:1px solid var(--bdr)}
+.btn-secondary:hover{border-color:var(--am);color:var(--am)}
+.btn-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:16px;border-top:1px solid var(--bdr)}
+.btn-row.end{justify-content:flex-end}
+
+/* ALERTS */
+.alert{background:var(--am)18;border:1px solid var(--am)50;border-radius:8px;padding:12px 16px;font-size:.82rem;color:var(--alt);margin-bottom:16px}
+
+/* PRINT BUTTON */
+.print-btn{background:var(--card2);border:1px solid var(--bdr);color:var(--mu);padding:9px 18px;border-radius:7px;font-size:.8rem;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;transition:all .2s}
+.print-btn:hover{border-color:var(--am);color:var(--am)}
+
+/* PROGRESS BAR */
+.prog-wrap{background:var(--card2);border-radius:3px;height:4px;overflow:hidden;margin-bottom:6px}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--am),var(--alt));transition:width .4s}
+
+/* PRINT STYLES */
+@media print{
+  body{background:#fff;color:#000;padding:0}
+  .hdr,.steps,.btn-row,.week-tabs,.print-btn{display:none!important}
+  .panel{display:block!important;padding:10px}
+  .session-card{border-color:#ccc;background:#fafafa;break-inside:avoid}
+  .session-card.gw{background:#fdf5e6}
+  .session-card.ride{background:#f0f7f0}
+  .wk-theme-bar{background:#f5f0e8;border-left-color:#C8952A}
+  :root{--tx:#000;--mu:#555;--am:#7a5a10;--card3:#f5f0e8;--bdr:#ccc}
+}
+@media(max-width:640px){
+  .skill-grid,.session-grid,.res-grid,.goal-grid{grid-template-columns:1fr}
+  .card-select.four{grid-template-columns:1fr 1fr}
+  .form-row.three,.form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <svg class="hdr-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="48" height="48" rx="10" fill="#C8952A"/>
+    <path d="M12 34 Q14 26 20 22 Q22 20 24 18 Q26 14 28 12 L32 10 Q34 10 33 13 Q32 15 30 16 L32 16 Q34 14 36 15 Q38 16 36 18 Q34 20 32 20 Q30 20 28 22 Q26 24 28 26 Q30 28 30 31 L28 35 Q24 38 20 37 L16 38 Q13 38 12 34Z" fill="white"/>
+    <circle cx="32" cy="16" r="1.5" fill="#C8952A"/>
+    <path d="M20 37 L19 42 M24 37 L23 42" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <div>
+    <div class="hdr-title">4 Horsemanship Program</div>
+    <div class="hdr-sub">Personalized 4-Week Game Plan · Western Style · Rider & Horse Development</div>
+  </div>
+</div>
+
+<!-- STEP BAR -->
+<div class="steps">
+  <div class="step active" id="st1"><span class="step-num" id="stn1">1</span><span id="stlbl1">Student Profile</span></div>
+  <div class="step" id="st2"><span class="step-num" id="stn2">2</span>Horse Assessment</div>
+  <div class="step" id="st3"><span class="step-num" id="stn3">3</span>Rider Skills</div>
+  <div class="step" id="st4"><span class="step-num" id="stn4">4</span>Goals & Schedule</div>
+  <div class="step" id="st5"><span class="step-num" id="stn5">5</span>4-Week Game Plan</div>
+</div>
+
+<!-- ═══════════════════════════════════════════ STEP 1 ═══════════════════════ -->
+<div class="panel active" id="p1">
+  <div class="prog-wrap"><div class="prog-bar" id="pbar1" style="width:20%"></div></div>
+  <p style="font-size:.72rem;color:var(--mu);text-align:right;margin-bottom:20px" id="plbl1">Step 1 of 5</p>
+
+  <!-- Assessment Type -->
+  <div class="sec-block" id="sec_mode">
+    <div class="sec-label">Assessment Type</div>
+    <p style="font-size:.78rem;color:var(--mu);margin-bottom:12px">Choose what this assessment is for — the steps below adjust automatically.</p>
+    <div class="card-select" style="grid-template-columns:1fr 1fr 1fr" id="mode_sel">
+      <div class="cs-opt" onclick="setMode('riding',this)"><span class="cs-icon">🏇</span><span class="cs-title">Riding Lesson</span><span class="cs-desc">Student profile & rider skills</span></div>
+      <div class="cs-opt" onclick="setMode('horse',this)"><span class="cs-icon">🐴</span><span class="cs-title">Horse Training</span><span class="cs-desc">Horse groundwork assessment</span></div>
+      <div class="cs-opt sel" onclick="setMode('both',this)"><span class="cs-icon">🤝</span><span class="cs-title">Both</span><span class="cs-desc">Full rider + horse program</span></div>
+    </div>
+  </div>
+
+  <!-- Personal Info -->
+  <div class="sec-block">
+    <div class="sec-label" id="lbl_student">Student Information</div>
+    <div class="form-row">
+      <div><label>Full Name *</label><input type="text" id="s_name" placeholder="First Last"></div>
+      <div><label>Age</label><input type="number" id="s_age" placeholder="e.g. 28" min="5" max="99"></div>
+    </div>
+    <div class="form-row">
+      <div><label>Email Address</label><input type="email" id="s_email" placeholder="name@email.com"></div>
+      <div><label>Phone Number</label><input type="tel" id="s_phone" placeholder="(555) 000-0000"></div>
+    </div>
+  </div>
+
+  <!-- Riding Background -->
+  <div class="sec-block" id="sec_ridebg">
+    <div class="sec-label">Riding Background</div>
+    <div class="form-row">
+      <div><label>Years of Riding Experience</label>
+        <select id="s_years">
+          <option value="">Select…</option>
+          <option value="0">Complete Beginner (never ridden)</option>
+          <option value="1">Less than 1 year</option>
+          <option value="2">1–2 years</option>
+          <option value="3">3–5 years</option>
+          <option value="4">6–10 years</option>
+          <option value="5">10+ years</option>
+        </select>
+      </div>
+      <div><label>Primary Riding Style</label>
+        <select id="s_style">
+          <option value="western">Western</option>
+          <option value="trail">Trail / Pleasure</option>
+          <option value="mixed">Mixed (Western + Trail)</option>
+        </select>
+      </div>
+    </div>
+    <label style="margin-bottom:10px;display:block">Experience Level</label>
+    <div class="card-select four" id="exp_sel">
+      <div class="cs-opt" onclick="selectOpt('exp_sel',this,'beginner')"><span class="cs-icon">🌱</span><span class="cs-title">Beginner</span><span class="cs-desc">0–2 yrs, building basics</span></div>
+      <div class="cs-opt" onclick="selectOpt('exp_sel',this,'intermediate')"><span class="cs-icon">🐎</span><span class="cs-title">Intermediate</span><span class="cs-desc">2–5 yrs, refining skills</span></div>
+      <div class="cs-opt" onclick="selectOpt('exp_sel',this,'advanced')"><span class="cs-icon">🏆</span><span class="cs-title">Advanced</span><span class="cs-desc">5+ yrs, fine-tuning</span></div>
+      <div class="cs-opt" onclick="selectOpt('exp_sel',this,'returning')"><span class="cs-icon">🔄</span><span class="cs-title">Returning</span><span class="cs-desc">Returning after a break</span></div>
+    </div>
+  </div>
+
+  <!-- Weekly Schedule -->
+  <div class="sec-block" id="sec_ridersched">
+    <div class="sec-label">Rider Weekly Training Schedule</div>
+    <div class="form-row three">
+      <div><label>Riding Sessions / Week</label>
+        <select id="s_ride">
+          <option value="1">1 day</option><option value="2">2 days</option>
+          <option value="3" selected>3 days</option><option value="4">4 days</option><option value="5">5 days</option><option value="6">6 days</option>
+        </select>
+      </div>
+      <div><label>Groundwork Sessions / Week</label>
+        <select id="s_work">
+          <option value="0">0 (built into rides)</option>
+          <option value="1" selected>1 day</option><option value="2">2 days</option><option value="3">3 days</option>
+        </select>
+      </div>
+      <div><label>Lessons / Week</label>
+        <select id="s_lesson">
+          <option value="0">0 (self-guided)</option>
+          <option value="1" selected>1 lesson</option><option value="2">2 lessons</option><option value="3">3 lessons</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div><label>Average Session Length</label>
+        <select id="s_len">
+          <option value="30">30 minutes</option>
+          <option value="45">45 minutes</option>
+          <option value="60" selected>1 hour</option>
+          <option value="90">1.5 hours</option>
+        </select>
+      </div>
+      <div><label>Preferred Training Time</label>
+        <select id="s_time">
+          <option value="morning">Morning</option>
+          <option value="afternoon" selected>Afternoon</option>
+          <option value="evening">Evening</option>
+          <option value="flexible">Flexible</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Horse Trainer & Owner Schedule -->
+  <div class="sec-block" id="sec_trainersched">
+    <div class="sec-label">4 Horsemanship Trainer & Owner Schedule</div>
+    <p style="font-size:.78rem;color:var(--mu);margin-bottom:12px">Choose the weekly schedule that fits — trainer sessions and owner practice sessions are both tracked in the app so progress stays visible between visits.</p>
+    <div class="form-row">
+      <div><label>Trainer Sessions / Week</label>
+        <select id="s_trainer">
+          <option value="1" selected>1x per week</option>
+          <option value="2">2x per week</option>
+        </select>
+      </div>
+      <div><label>Owner Practice Sessions / Week (minimum 3)</label>
+        <select id="s_owner">
+          <option value="3" selected>3x per week (minimum)</option>
+          <option value="4">4x per week</option>
+          <option value="5">5x per week</option>
+          <option value="6">6x per week</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Horse Info -->
+  <div class="sec-block">
+    <div class="sec-label">Horse Information</div>
+    <label style="margin-bottom:10px;display:block">Horse Status</label>
+    <div class="card-select" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:14px" id="horse_sel">
+      <div class="cs-opt" onclick="selectOpt('horse_sel',this,'own')"><span class="cs-icon">🏠</span><span class="cs-title">Own Horse</span></div>
+      <div class="cs-opt" onclick="selectOpt('horse_sel',this,'lease')"><span class="cs-icon">🤝</span><span class="cs-title">Lease Horse</span></div>
+      <div class="cs-opt" onclick="selectOpt('horse_sel',this,'facility')"><span class="cs-icon">🏟</span><span class="cs-title">Facility Horse</span></div>
+    </div>
+    <div class="form-row">
+      <div><label>Horse's Approximate Age & Breed (optional)</label><input type="text" id="s_horse" placeholder="e.g. 8 yr old Quarter Horse"></div>
+      <div><label>Horse Temperament</label>
+        <select id="s_temp">
+          <option value="calm">Calm & Steady</option>
+          <option value="spirited">Spirited / Energetic</option>
+          <option value="green">Green / Young (under-trained)</option>
+          <option value="spooky">Spooky / Reactive</option>
+          <option value="unknown">Unknown / Just Getting Acquainted</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row one">
+      <div><label>Primary Training Goal (brief description)</label>
+        <input type="text" id="s_goal_text" placeholder="e.g. Build confidence trail riding, learn neck reining, prepare for a show…">
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-row end">
+    <button class="btn btn-primary" id="btn_p1next" onclick="navNext(1)">Continue to Horse Assessment →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ STEP 2 — HORSE ASSESSMENT ═══════════════════════ -->
+<div class="panel" id="p2">
+  <div class="prog-wrap"><div class="prog-bar" id="pbar2" style="width:40%"></div></div>
+  <p style="font-size:.72rem;color:var(--mu);text-align:right;margin-bottom:8px" id="plbl2">Step 2 of 5</p>
+
+  <div class="alert">🐴 Horse Groundwork Assessment — 4 Horsemanship Method. Rate the horse honestly on each exercise: <strong>1</strong> Complete Beginner · <strong>2</strong> Advanced Beginner · <strong>3</strong> Intermediate · <strong>4</strong> Proficient (ready to advance to the next stage). Stage 2 unlocks automatically once Stage 1 rates Intermediate or better across the board.</div>
+
+  <!-- STAGE 1 -->
+  <div class="grp-hdr"><span class="grp-badge gw">🌿 4 Horsemanship Groundwork — Stage 1</span><span class="grp-line"></span></div>
+  <p style="font-size:.75rem;color:var(--mu);margin-bottom:12px">Foundational control and safety exercises every horse must master first.</p>
+  <div class="skill-grid" id="horse-stage1-grid"></div>
+
+  <!-- STAGE 2 (conditionally revealed) -->
+  <div id="horse-stage2-wrap" style="display:none;margin-top:20px">
+    <div class="grp-hdr"><span class="grp-badge ri">🏇 4 Horsemanship Groundwork — Stage 2</span><span class="grp-line"></span></div>
+    <p style="font-size:.75rem;color:var(--mu);margin-bottom:12px">Unlocked — Stage 1 proficiency confirmed. These build precision, respect, and distance control.</p>
+    <div class="skill-grid" id="horse-stage2-grid"></div>
+  </div>
+
+  <div id="horse-stage-result" style="margin-top:16px"></div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="navPrev(2)">← Back</button>
+    <button class="btn btn-primary" id="btn_p2next" onclick="navNext(2)">Continue to Rider Skills →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ STEP 3 — RIDER SKILLS ═══════════════════════ -->
+<div class="panel" id="p3">
+  <div class="prog-wrap"><div class="prog-bar" id="pbar3" style="width:60%"></div></div>
+  <p style="font-size:.72rem;color:var(--mu);text-align:right;margin-bottom:8px" id="plbl3">Step 3 of 5</p>
+
+  <div class="alert">Rate each skill honestly based on current ability. This shapes your personalized 4-week plan: <strong>1</strong> Complete Beginner · <strong>2</strong> Advanced Beginner · <strong>3</strong> Intermediate · <strong>4</strong> Proficient (ready to advance to the next stage).</div>
+
+  <!-- GROUNDWORK -->
+  <div class="grp-hdr"><span class="grp-badge gw">🌿 Groundwork Skills</span><span class="grp-line"></span></div>
+  <div class="skill-grid" id="skill-grid"></div>
+
+  <!-- RIDING -->
+  <div class="grp-hdr" style="margin-top:20px"><span class="grp-badge ri">🏇 Riding Skills</span><span class="grp-line"></span></div>
+  <div class="skill-grid" id="ride-grid"></div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="navPrev(3)">← Back</button>
+    <button class="btn btn-primary" onclick="navNext(3)">Continue to Goals →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ STEP 4 — GOALS & SCHEDULE ═══════════════════════ -->
+<div class="panel" id="p4">
+  <div class="prog-wrap"><div class="prog-bar" id="pbar4" style="width:80%"></div></div>
+  <p style="font-size:.72rem;color:var(--mu);text-align:right;margin-bottom:16px" id="plbl4">Step 4 of 5</p>
+
+  <!-- Assessment Summary -->
+  <div class="sec-block" id="blk_focus">
+    <div class="sec-label">Assessment Summary — Focus Areas Identified</div>
+    <p style="font-size:.8rem;color:var(--mu);margin-bottom:12px">Based on your ratings, these areas will receive priority in your game plan:</p>
+    <div id="focus-display" class="focus-pills"></div>
+    <div style="margin-top:14px;font-size:.78rem;color:var(--mu);display:flex;gap:16px">
+      <span>🔴 Complete Beginner (1)</span>
+      <span>🟡 Advanced Beginner (2)</span>
+      <span>🔵 Intermediate (3)</span>
+      <span>🟢 Proficient (4)</span>
+    </div>
+  </div>
+
+  <!-- Horse Stage Summary -->
+  <div class="sec-block" id="blk_hstage">
+    <div class="sec-label">Horse Assessment Summary</div>
+    <div id="horse-stage-summary"></div>
+  </div>
+
+  <!-- Primary Goal -->
+  <div class="sec-block">
+    <div class="sec-label">Primary Training Goal</div>
+    <div class="goal-grid" id="goal_sel">
+      <div class="goal-card" onclick="selectGoal(this,'safety')"><span class="g-icon">🛡</span><div class="g-title">Safety & Confidence</div><div class="g-desc">Build trust, reduce fear, solid fundamentals</div></div>
+      <div class="goal-card" onclick="selectGoal(this,'partnership')"><span class="g-icon">🤝</span><div class="g-title">Partnership & Connection</div><div class="g-desc">Deepen horse-human bond, liberty work</div></div>
+      <div class="goal-card" onclick="selectGoal(this,'technical')"><span class="g-icon">📐</span><div class="g-title">Technical Skills</div><div class="g-desc">Improve riding mechanics, body position</div></div>
+      <div class="goal-card" onclick="selectGoal(this,'trail')"><span class="g-icon">🌲</span><div class="g-title">Trail Riding</div><div class="g-desc">Prepare for outdoor adventures, obstacles</div></div>
+      <div class="goal-card" onclick="selectGoal(this,'competition')"><span class="g-icon">🏆</span><div class="g-title">Competition / Show</div><div class="g-desc">Pattern shows, gymkhana, performance</div></div>
+      <div class="goal-card" onclick="selectGoal(this,'rescue')"><span class="g-icon">💛</span><div class="g-title">Rescue / Rehab</div><div class="g-desc">Trauma-informed, patient progression</div></div>
+    </div>
+  </div>
+
+  <!-- Schedule Preview -->
+  <div class="sec-block" id="blk_rsched">
+    <div class="sec-label">Rider Weekly Training Schedule</div>
+    <div class="sched-preview" id="sched-preview">Loading schedule…</div>
+  </div>
+
+  <!-- Horse Schedule Preview -->
+  <div class="sec-block" id="blk_hsched">
+    <div class="sec-label">Horse Trainer & Owner Schedule</div>
+    <div class="sched-preview" id="horse-sched-preview">Loading schedule…</div>
+  </div>
+
+  <!-- Notes -->
+  <div class="sec-block">
+    <div class="sec-label">Instructor Notes (Optional)</div>
+    <textarea id="s_notes" placeholder="Any special considerations, injuries, horse history, or notes for your instructor…"></textarea>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="navPrev(4)">← Back</button>
+    <button class="btn btn-primary" onclick="generatePlan()">Generate My Game Plan →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ STEP 5 — GAME PLAN ═══════════════════════ -->
+<div class="panel" id="p5">
+  <div class="prog-wrap"><div class="prog-bar" style="width:100%"></div></div>
+
+  <div id="plan-header-area"></div>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div class="week-tabs" style="flex:1;margin-bottom:0;margin-right:12px">
+      <button class="wtab active" onclick="showWeek(1,this)">Week 1</button>
+      <button class="wtab" onclick="showWeek(2,this)">Week 2</button>
+      <button class="wtab" onclick="showWeek(3,this)">Week 3</button>
+      <button class="wtab" onclick="showWeek(4,this)">Week 4</button>
+    </div>
+    <button class="print-btn" onclick="window.print()">🖨 Print Plan</button>
+  </div>
+
+  <div id="plan-content"></div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goStep(4)">← Edit Goals</button>
+    <button class="btn btn-primary" onclick="startNew()">Start New Assessment</button>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const GW_SKILLS = [
+  {id:0,cat:'gw',name:'Horse Body Language',desc:'Reading ears, head position, mouth, tail & body posture to adapt your approach in real time'},
+  {id:1,cat:'gw',name:'Physical Boundary & Safety',desc:'Maintaining safe personal space, correct approach angle, haltering procedure, safe tying'},
+  {id:2,cat:'gw',name:'Pressure & Release Timing',desc:'Clear ask, appropriate pressure level, timing the release at first try — feel and timing'},
+  {id:3,cat:'gw',name:'Join Up & Liberty Work',desc:'Circle work, direction changes, reading lick/chew signals, inviting the horse to follow'},
+  {id:4,cat:'gw',name:'Yielding Exercises',desc:'Asking for forequarter & hindquarter yields, backing from ground, lateral movement'},
+  {id:5,cat:'gw',name:'Desensitization & Obstacles',desc:'Exposing horse to new stimuli, building confidence around tarps, poles, water, flags'},
+];
+const RIDE_SKILLS = [
+  {id:6,cat:'ri',name:'Mounting, Dismounting & Tacking',desc:'Safe, balanced technique for tacking up (saddle pad, saddle, cinch) and mounting/dismounting'},
+  {id:7,cat:'ri',name:'Body Positions (4 Positions)',desc:'Forward / Neutral / Back / Stop Seat — applying each at the correct moment with intention'},
+  {id:8,cat:'ri',name:'Leg Position & Cues',desc:'Rib button / Forequarter / Hindquarter / Scissor leg positions — leg independence from reins'},
+  {id:9,cat:'ri',name:'Rein Handling & Neck Rein',desc:'Light hands, neck rein direction, stop, backup — zero unnecessary rein pressure'},
+  {id:10,cat:'ri',name:'Walk / Trot Transitions',desc:'Upward & downward transitions using body position first, reins second, rhythm & relaxation'},
+  {id:11,cat:'ri',name:'Canter & Trail Confidence',desc:'Canter departure, rhythm, gait control, confidence with varied terrain & obstacles'},
+];
+const RATINGS = [{lbl:'Complete\nBeginner',cls:'sel1'},{lbl:'Advanced\nBeginner',cls:'sel2'},{lbl:'Intermediate',cls:'sel3'},{lbl:'Proficient',cls:'sel4'}];
+const ALL_SKILLS = [...GW_SKILLS,...RIDE_SKILLS];
+
+// ─── FOUR HORSEMANSHIP — HORSE GROUNDWORK ASSESSMENT DATA ────────────────────
+// 1–4 scale used everywhere in the program: 1 Complete Beginner · 2 Advanced Beginner
+// · 3 Intermediate · 4 Proficient (ready to advance to the next stage)
+const HORSE_STAGE1 = [
+  {id:100,cat:'gw',name:'Round Penning',desc:'Sending the horse away to move freely around the round pen, controlling gait and direction to establish leadership before any hands-on work'},
+  {id:101,cat:'gw',name:'Desensitizing to the Rope',desc:'Rubbing and swinging the lead rope over the head, neck, body & legs until the horse stands still and relaxed'},
+  {id:102,cat:'gw',name:'Desensitizing to Stick and String',desc:'Introducing the training stick and string as an extension of your arm — touching, rubbing & swinging until the horse no longer reacts'},
+  {id:103,cat:'gw',name:'Yielding the Hindquarters',desc:'Asking the horse to cross its hind legs and disengage the hindquarters away from pressure, both directions'},
+  {id:104,cat:'gw',name:'Backing Up',desc:'Applying rhythmic pressure toward the chest/nose to send the horse backward promptly and in a straight line'},
+  {id:105,cat:'gw',name:'Yielding the Forequarters',desc:'Asking the horse to cross its front legs and move its shoulders away from poll pressure, both directions'},
+  {id:106,cat:'gw',name:'Lunging for Respect — Stage 1',desc:'Sending the horse out on the line in a controlled circle at walk & trot, managing speed and direction changes'},
+  {id:107,cat:'gw',name:'Flexing the Head and Neck',desc:'Asking the horse to bring its nose around toward the girth on each side, softening the neck and encouraging a mental give'},
+];
+const HORSE_STAGE2 = [
+  {id:108,cat:'ri',name:'Sending Exercise',desc:'Directing the horse to move away from you and past an obstacle in a straight line, building trust in moving forward off your body language'},
+  {id:109,cat:'ri',name:'Circle Driving',desc:'Driving the horse in a circle around you using stick-and-string body position, refining speed control and clean transitions'},
+  {id:110,cat:'ri',name:'Lunging for Respect — Stage 2',desc:'Advanced longeing adding direction changes, gait transitions, and distance work with less physical contact'},
+  {id:111,cat:'ri',name:'Leading Beside',desc:'Horse walks correctly at your shoulder without crowding, lagging, or dragging — matching your speed and stopping when you stop'},
+  {id:112,cat:'ri',name:'Step and Walk',desc:'Desensitizing the horse to being touched/slapped with the rope while it continues to move forward calmly, building focus under distraction'},
+  {id:113,cat:'ri',name:'Helicopter Exercise',desc:'Swinging the lead rope in a circle over and around the horse\'s head to desensitize to fast overhead movement near the face'},
+  {id:114,cat:'ri',name:'Head Shy Exercise',desc:'Systematically rubbing and touching around the ears, poll & face until the horse accepts handling without flinching or raising its head'},
+];
+// Stage 3 — implementing groundwork skills into riding (used once a horse graduates Stage 1 & 2)
+const HORSE_STAGE3 = [
+  {id:200,name:'Flexing at the Standstill',desc:'Asking the horse to flex laterally to rein pressure while standing still — the mounted version of ground flexing'},
+  {id:201,name:'One Rein Stops',desc:'Picking up a single rein to disengage the hindquarters and bring the horse to a safe, controlled stop'},
+  {id:202,name:'Cruising Lessons',desc:'Riding forward at a working trot/lope in open space, letting the horse move out while the rider stays relaxed and steers minimally'},
+  {id:203,name:'Follow the Fence',desc:'Riding the fence line at walk/trot to establish straightness and rhythm with minimal steering correction'},
+  {id:204,name:'Diagnosis',desc:'Evaluating the horse\'s movement at each gait to identify stiffness, one-sidedness, or resistance that needs targeted flexion work'},
+  {id:205,name:'Touch and Rub Exercise',desc:'Riding up to an object and touching/rubbing it from the saddle to desensitize and build confidence near obstacles while mounted'},
+  {id:206,name:'Yield the Hindquarters from a Standstill',desc:'Mounted version of the ground yield — asking the horse to cross its hind legs and step away from leg pressure while stopped'},
+  {id:207,name:'Yield to a Stop',desc:'Using a hindquarter yield to bring the horse to a soft, controlled stop instead of pulling on both reins'},
+  {id:208,name:'Bending at the Walk',desc:'Riding circles at the walk, asking the horse to bend through its body around the rider\'s inside leg and rein'},
+  {id:209,name:'Bending Transitions',desc:'Practicing walk-trot-walk transitions while maintaining bend through corners and circles'},
+  {id:210,name:'Vertical Flexion at the Standstill',desc:'Asking the horse to drop its nose and flex at the poll while standing still — the start of headset and collection work'},
+  {id:211,name:'Draw to a Stop',desc:'Drawing the horse\'s energy back through seat and light rein contact for a smooth stop without abrupt pulling'},
+  {id:212,name:'Yield the Hindquarters and Back Up',desc:'Combining a hindquarter yield with an immediate straight backup under saddle to reinforce respect and control of the hind end'},
+];
+const ALL_HORSE_STAGE12 = [...HORSE_STAGE1,...HORSE_STAGE2];
+
+let skillScores = {};
+let horseScores = {};
+let currentHorseStage = 'stage1';
+let selectedExp = '';
+let selectedGoal = '';
+let selectedHorse = '';
+
+// ─── RENDER SKILLS ──────────────────────────────────────────────────────────
+function renderSkills(){
+  ['skill-grid','ride-grid'].forEach((id,gi)=>{
+    const grid = document.getElementById(id);
+    const src = gi===0?GW_SKILLS:RIDE_SKILLS;
+    grid.innerHTML = src.map(sk=>`
+      <div class="skill-card" id="skc${sk.id}">
+        <div class="sk-cat ${sk.cat}">${sk.cat==='gw'?'🌿 Groundwork':'🏇 Riding'}</div>
+        <div class="sk-name">${sk.name}</div>
+        <div class="sk-desc">${sk.desc}</div>
+        <div class="sk-ratings">
+          ${RATINGS.map((r,ri)=>`<button class="sk-btn" onclick="setRating(${sk.id},${ri+1},this)">
+            <span class="sr-num">${ri+1}</span>
+            <span class="sr-lbl">${r.lbl.replace('\n','<br>')}</span>
+          </button>`).join('')}
+        </div>
+      </div>`).join('');
+  });
+}
+
+function setRating(id,val,btn){
+  skillScores[id]=val;
+  const card=document.getElementById('skc'+id);
+  card.classList.add('rated');
+  const btns=card.querySelectorAll('.sk-btn');
+  btns.forEach((b,i)=>{b.className='sk-btn'+(i<val?' '+RATINGS[i].cls:'')});
+}
+
+// ─── RENDER HORSE ASSESSMENT (4 Horsemanship Stage 1 & 2) ────────────────
+function renderHorseSkills(){
+  const g1=document.getElementById('horse-stage1-grid');
+  g1.innerHTML = HORSE_STAGE1.map(sk=>`
+    <div class="skill-card" id="hskc${sk.id}">
+      <div class="sk-cat gw">🌿 Stage 1</div>
+      <div class="sk-name">${sk.name}</div>
+      <div class="sk-desc">${sk.desc}</div>
+      <div class="sk-ratings">
+        ${RATINGS.map((r,ri)=>`<button class="sk-btn" onclick="setHorseRating(${sk.id},${ri+1},this)">
+          <span class="sr-num">${ri+1}</span>
+          <span class="sr-lbl">${r.lbl.replace('\n','<br>')}</span>
+        </button>`).join('')}
+      </div>
+    </div>`).join('');
+  const g2=document.getElementById('horse-stage2-grid');
+  g2.innerHTML = HORSE_STAGE2.map(sk=>`
+    <div class="skill-card" id="hskc${sk.id}">
+      <div class="sk-cat ri">🏇 Stage 2</div>
+      <div class="sk-name">${sk.name}</div>
+      <div class="sk-desc">${sk.desc}</div>
+      <div class="sk-ratings">
+        ${RATINGS.map((r,ri)=>`<button class="sk-btn" onclick="setHorseRating(${sk.id},${ri+1},this)">
+          <span class="sr-num">${ri+1}</span>
+          <span class="sr-lbl">${r.lbl.replace('\n','<br>')}</span>
+        </button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function setHorseRating(id,val,btn){
+  horseScores[id]=val;
+  const card=document.getElementById('hskc'+id);
+  card.classList.add('rated');
+  const btns=card.querySelectorAll('.sk-btn');
+  btns.forEach((b,i)=>{b.className='sk-btn'+(i<val?' '+RATINGS[i].cls:'')});
+  updateHorseStageResult();
+}
+
+function horseAvg(list){
+  const scores=list.map(s=>horseScores[s.id]||0);
+  if(scores.some(v=>v===0)) return null; // not fully rated yet
+  return scores.reduce((a,b)=>a+b,0)/scores.length;
+}
+
+function updateHorseStageResult(){
+  const avg1=horseAvg(HORSE_STAGE1);
+  const wrap=document.getElementById('horse-stage2-wrap');
+  const el=document.getElementById('horse-stage-result');
+  if(avg1!==null && avg1>=3){
+    wrap.style.display='block';
+  }
+  const avg2 = wrap.style.display==='block' ? horseAvg(HORSE_STAGE2) : null;
+
+  let stage='stage1', label='4 Horsemanship Groundwork — Stage 1 (Foundation)';
+  let note='Every Stage 1 exercise should rate Intermediate (3) or Proficient (4) before moving on.';
+  if(avg1!==null && avg1>=3){
+    stage='stage2'; label='4 Horsemanship Groundwork — Stage 2 (Development)';
+    note='Stage 1 confirmed — this horse\'s 4-week plan will build on Stage 2 exercises while maintaining Stage 1.';
+    if(avg2!==null && avg2>=3){
+      stage='stage3'; label='4 Horsemanship Stage 3 Ready — Implementing Groundwork Into Riding';
+      note='Stage 1 & 2 confirmed — this horse is ready to begin under-saddle refinement work.';
+    }
+  }
+  currentHorseStage=stage;
+  if(avg1===null){ el.innerHTML=''; return; }
+  el.innerHTML=`<div class="alert" style="background:var(--sg)18;border-color:var(--sg)50;color:#9fc98a">
+    <strong>Current Horse Stage:</strong> ${label}<br>
+    <span style="font-size:.78rem;opacity:.9">${note}</span>
+  </div>`;
+}
+
+// ─── SELECT HELPERS ─────────────────────────────────────────────────────────
+function selectOpt(groupId,el,val){
+  document.querySelectorAll('#'+groupId+' .cs-opt').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  if(groupId==='exp_sel') selectedExp=val;
+  if(groupId==='horse_sel') selectedHorse=val;
+}
+function selectGoal(el,val){
+  document.querySelectorAll('#goal_sel .goal-card').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedGoal=val;
+}
+
+// ─── ASSESSMENT MODE ────────────────────────────────────────────────────────
+let assessMode='both';
+const MODE_SEQ={both:[1,2,3,4,5],riding:[1,3,4,5],horse:[1,2,4,5]};
+function setMode(m,el){
+  assessMode=m;
+  if(el){document.querySelectorAll('#mode_sel .cs-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');}
+  const seq=MODE_SEQ[m];
+  [1,2,3,4,5].forEach(i=>{
+    const tab=document.getElementById('st'+i);
+    const pos=seq.indexOf(i);
+    tab.style.display=pos<0?'none':'';
+    if(pos>=0) document.getElementById('stn'+i).textContent=pos+1;
+  });
+  seq.forEach((p,idx)=>{
+    const lbl=document.getElementById('plbl'+p);
+    if(lbl) lbl.textContent='Step '+(idx+1)+' of '+seq.length;
+    const bar=document.getElementById('pbar'+p);
+    if(bar) bar.style.width=Math.round((idx+1)/seq.length*100)+'%';
+  });
+  document.getElementById('sec_ridebg').style.display=(m==='horse')?'none':'';
+  document.getElementById('sec_ridersched').style.display=(m==='horse')?'none':'';
+  document.getElementById('sec_trainersched').style.display=(m==='riding')?'none':'';
+  document.getElementById('lbl_student').textContent=(m==='horse')?'Owner Information':'Student Information';
+  document.getElementById('stlbl1').textContent=(m==='horse')?'Owner & Horse Profile':'Student Profile';
+  document.getElementById('btn_p1next').textContent=(m==='riding')?'Continue to Rider Skills \u2192':'Continue to Horse Assessment \u2192';
+  document.getElementById('btn_p2next').textContent=(m==='horse')?'Continue to Goals \u2192':'Continue to Rider Skills \u2192';
+}
+function navNext(cur){
+  if(cur===1&&!document.getElementById('s_name').value.trim()){
+    alert('Please enter the '+(assessMode==='horse'?'owner':'student')+' name to continue.');return;
+  }
+  const seq=MODE_SEQ[assessMode];const i=seq.indexOf(cur);
+  if(i>=0&&i<seq.length-1) goStep(seq[i+1]);
+}
+function navPrev(cur){
+  const seq=MODE_SEQ[assessMode];const i=seq.indexOf(cur);
+  if(i>0) goStep(seq[i-1]);
+}
+
+// ─── NAVIGATION ─────────────────────────────────────────────────────────────
+function goStep(n){
+  if(n===4) buildGoalsStep();
+  [1,2,3,4,5].forEach(i=>{
+    document.getElementById('p'+i).classList.toggle('active',i===n);
+    const st=document.getElementById('st'+i);
+    st.classList.remove('active','done');
+    if(i===n) st.classList.add('active');
+    else if(i<n) st.classList.add('done');
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ─── GOALS STEP BUILD ───────────────────────────────────────────────────────
+function buildGoalsStep(){
+  // Show only the blocks relevant to this assessment mode
+  document.getElementById('blk_focus').style.display=(assessMode==='horse')?'none':'';
+  document.getElementById('blk_rsched').style.display=(assessMode==='horse')?'none':'';
+  document.getElementById('blk_hstage').style.display=(assessMode==='riding')?'none':'';
+  document.getElementById('blk_hsched').style.display=(assessMode==='riding')?'none':'';
+  // Focus pills
+  const scored = ALL_SKILLS.map(s=>({...s,score:skillScores[s.id]||0})).sort((a,b)=>a.score-b.score);
+  const fp = document.getElementById('focus-display');
+  fp.innerHTML = ALL_SKILLS.map(s=>{
+    const sc=skillScores[s.id]||0;
+    const cls=sc===0?'':sc<=1?'low':sc===2?'low':sc===3?'mid':'';
+    const icon=sc===0?'⬜':sc===1?'🔴':sc===2?'🟡':sc===3?'🔵':'🟢';
+    return `<span class="focus-pill ${cls}">${icon} ${s.name}${sc?` (${sc}/4)`:''}</span>`;
+  }).join('');
+
+  // Schedule preview
+  const rd=parseInt(document.getElementById('s_ride').value)||3;
+  const gd=parseInt(document.getElementById('s_work').value)||1;
+  const total=rd+gd;
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  let assigned=[];
+  // place groundwork first then riding
+  for(let i=0;i<gd&&i<7;i++) assigned.push({d:days[i*2>6?6:i*2],type:'grnd',lbl:'Groundwork Session'});
+  let ri=0;
+  for(let i=0;i<rd&&assigned.length<7;i++){
+    let d=days[(i*2+1)>6?6:i*2+1];
+    while(assigned.find(a=>a.d===d)&&days.indexOf(d)<6) d=days[days.indexOf(d)+1];
+    assigned.push({d,type:'ride',lbl:'Riding Session'});
+  }
+  const rest=days.filter(d=>!assigned.find(a=>a.d===d));
+  const prev=document.getElementById('sched-preview');
+  prev.innerHTML=`
+    <div class="sched-ratio">
+      <div class="ratio-bar"><div class="ratio-lbl" style="color:var(--ri)">🏇 Riding — ${rd} session${rd!==1?'s':''}/week</div>
+        <div class="ratio-track"><div class="ratio-fill-r" style="width:${Math.round(rd/total*100)}%"></div></div></div>
+      <div class="ratio-bar"><div class="ratio-lbl" style="color:#c89a60">🌿 Groundwork — ${gd} session${gd!==1?'s':''}/week</div>
+        <div class="ratio-track"><div class="ratio-fill-g" style="width:${Math.round(gd/total*100)}%"></div></div></div>
+    </div>
+    <div style="font-size:.72rem;color:var(--mu);margin-bottom:8px">Approximate weekly day distribution:</div>
+    <div class="sched-days">
+      ${assigned.map(a=>`<span class="sched-day ${a.type}">${a.d}: ${a.lbl}</span>`).join('')}
+      ${rest.slice(0,3).map(d=>`<span class="sched-day rest">${d}: Rest</span>`).join('')}
+    </div>
+    <div style="font-size:.7rem;color:var(--mu);margin-top:10px">💡 Each riding session includes 10–15 min of groundwork warmup to achieve the 75% riding / 25% groundwork ratio.</div>`;
+
+  // Horse stage summary
+  const stageLabels={stage1:'Stage 1 — Foundation Groundwork',stage2:'Stage 2 — Development Groundwork',stage3:'Stage 3 — Riding Integration Ready'};
+  const hs=document.getElementById('horse-stage-summary');
+  hs.innerHTML = `<div class="alert" style="background:var(--sg)18;border-color:var(--sg)50;color:#9fc98a">
+    <strong>Horse is starting at:</strong> 4 Horsemanship ${stageLabels[currentHorseStage]||stageLabels.stage1}
+  </div>`;
+
+  // Horse trainer/owner schedule preview
+  const trd=parseInt(document.getElementById('s_trainer').value)||1;
+  const ownd=parseInt(document.getElementById('s_owner').value)||3;
+  const htotal=trd+ownd;
+  const hprev=document.getElementById('horse-sched-preview');
+  hprev.innerHTML=`
+    <div class="sched-ratio">
+      <div class="ratio-bar"><div class="ratio-lbl" style="color:var(--ri)">🎓 Trainer Sessions — ${trd}x/week</div>
+        <div class="ratio-track"><div class="ratio-fill-r" style="width:${Math.round(trd/htotal*100)}%"></div></div></div>
+      <div class="ratio-bar"><div class="ratio-lbl" style="color:#c89a60">🧑‍🌾 Owner Sessions — ${ownd}x/week (min 3)</div>
+        <div class="ratio-track"><div class="ratio-fill-g" style="width:${Math.round(ownd/htotal*100)}%"></div></div></div>
+    </div>
+    <div style="font-size:.7rem;color:var(--mu);margin-top:10px">💡 Owner sessions repeat the trainer's exercises to build consistency. Daily checklist items apply every day, regardless of a formal session.</div>`;
+}
+
+// ─── PLAN GENERATION ────────────────────────────────────────────────────────
+const PLAN = {
+  beginner:[
+    {week:1,theme:'Safety First — Foundation & Trust Building',
+     focus:['Horse Body Language','Physical Boundary & Safety','Mounting & Neutral Seat'],
+     gwTitle:'Join Up Introduction & Body Language',gwDur:'45–60 min',
+     gwSub:'4 Horsemanship foundation: approach, halter, lead, circle work',
+     gwEx:[
+       'Safe approach: walk to horse\'s shoulder at 45°, observe ear/head/tail position',
+       'Haltering practice: calm, deliberate movements — reward with immediate slack',
+       'Leading exercise: establish 2–3 ft of personal space; stop when horse crowds',
+       'Join Up intro: ask for circle movement, watch for licking/chewing as relaxation',
+       'Direction change drill: change direction 3× each side using rope pressure',
+       '5 min quiet bonding: stand still, let horse rest head near you',
+     ],
+     gwRef:'4 Horsemanship Program Reference Guide — "Haltering & Leading" foundation series',
+     rides:[
+       {title:'Barrel Work & First Saddle Time',dur:'45–60 min',
+        sub:'Sally Swift body positions on barrel before mounting',
+        ex:['Pre-ride: 5 min join up warmup — check horse body language before tacking',
+            'Tacking up: saddle pad placement, saddle, cinch safety check (no pinch)',
+            'Barrel drill: sit Position 2 (Neutral Seat) — ear/shoulder/hip/heel vertical',
+            'Mount: 3 deep breaths, ask horse to stand square before stepping up',
+            'Walk large circle: tall Neutral Seat, loose reins, feel horse rhythm',
+            'Practice Position 4 (Stop Seat): sit heavy, exhale, ask halt 5× in a row',
+            'Untack, cool down, 5 min observation time'],
+        ref:'Sally Swift, Centered Riding 2 — "Balance, Breathing & the Four Positions"'},
+       {title:'Walk Confidence & Direction Changes',dur:'45–60 min',
+        sub:'All 4 body positions at walk — seat before reins',
+        ex:['Pre-ride: yield one forequarter + one hindquarter from ground',
+            'Mount with intention: sit quietly, breathe, then ask horse to walk',
+            'Position 1 (Forward Seat): slightly forward to invite upward energy at walk',
+            'Position 3 (Back Seat): sit slightly back for downward transitions',
+            'Direction change: look where you want to go + neck rein — feel the difference',
+            'Three complete halts using Position 4 seat only before touching reins',
+            'End: freestyle walk with loose reins — relax and feel horse movement'],
+        ref:'Mind Your Horse (YouTube) — "Feel & Timing with Your Horse" series'},
+       {title:'Building Routine & Rein Basics',dur:'45–60 min',
+        sub:'Consistency is the foundation of horse trust',
+        ex:['Full tack-up routine independently (goal: under 15 min)',
+            'Walk pattern: two complete circles each direction, halt at a chosen cone/spot',
+            'Practice all 4 body positions at standstill, then transition into motion',
+            'Introduce backing from saddle: light rein draw back, release immediately at first step',
+            'Neck rein intro: lay rein on neck, do NOT cross center — feel horse\'s response',
+            'End ride with 5 min loose rein walk — you steer, horse relaxes'],
+        ref:'4 Horsemanship Program Reference Guide — "The Foundation Riding Series"'},
+     ],
+     milestone:'Student can safely halter, lead, mount, and walk with a consistent Neutral Seat (Position 2)',
+     refs:[
+       {icon:'📚',title:'Centered Riding 2',src:'Sally Swift',tip:'Read Chapter 1: Balance & Breathing. Sit on a ball or chair and practice the 4 positions before your next ride.'},
+       {icon:'📺',title:'Mind Your Horse',src:'YouTube Channel',tip:'Search "How to read horse body language" — watch before Session 1 groundwork.'},
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Review the "Haltering & Leading" foundation module — mirror the exercises on Day 1.'},
+     ]},
+
+    {week:2,theme:'Communication — Pressure, Release & Basic Controls',
+     focus:['Pressure & Release Timing','Join Up & Liberty Work','Body Positions Under Saddle'],
+     gwTitle:'Join Up Progression & Yielding',gwDur:'45–60 min',
+     gwSub:'Develop feel and timing — the foundation of horse communication',
+     gwEx:[
+       'Join Up with full circle work and 3 direction changes each way (20 min)',
+       'Lick & chew recognition: stop asking the moment you see the horse relax',
+       'Forequarter yield: apply pressure at neck, ask 360° both directions',
+       'Hindquarter yield: stand at hindquarter, ask 360° both directions',
+       'Back from the ground: apply chest/nose pressure, release at first step back',
+       'Invite to follow: lead at liberty 3 paces, stop — let horse walk up to you',
+     ],
+     gwRef:'Mind Your Horse (YouTube) — "Join Up & Liberty: Building the Bridge" series',
+     rides:[
+       {title:'Leg Position Introduction',dur:'45–60 min',
+        sub:'4 leg positions — the rider\'s vocabulary with the horse',
+        ex:['Barrel drill: practice all 4 leg positions before mounting',
+            'Position 1 (Rib Button): leg just behind the cinch — forward leg cue',
+            'Position 2 (Forequarter): leg at cinch position — arc/bend the horse',
+            'Position 3 (Hindquarter): leg 4–6" behind cinch — swing hindquarters',
+            'Position 4 (Scissor): both legs back — collect, stop forward movement',
+            'Walk 4 circles: use one leg position intentionally per circle',
+            'Notice horse response — did he move off the leg? Reward the try'],
+        ref:'Equestrian Program Fundamentals — Leg Positions 1–4 Reference Guide'},
+       {title:'Neck Rein Basics & Halt Quality',dur:'45–60 min',
+        sub:'Light hands are non-negotiable in Western riding',
+        ex:['Pre-ride: join up warmup — test connection before mounting',
+            'Walk figure 8: use neck rein (lay rein on neck side of turn)',
+            'Stop quality: Position 4 seat → exhale → THEN rein if needed',
+            'Back up: draw reins back softly, release immediately at first try',
+            'One-handed riding attempt: hold both reins in one hand for 5 min',
+            'Test: can you direct horse on loose rein using seat alone?',
+            'Praise every try — release at first response, not best response'],
+        ref:'Program Fundamentals — Neck Reining: 4 Fundamentals of Light Hands'},
+       {title:'Walk-Trot Transition Introduction',dur:'45–60 min',
+        sub:'Energy flows from seat, not heels',
+        ex:['Walk warm-up: 5 min position review — all 4 positions at walk',
+            'Trot invitation: Position 1 + light squeeze, cluck once, release immediately',
+            'First trot: sit tall, breathe, absorb movement with hips — not hands',
+            'Trot → Walk: Position 3 (Back Seat) + "easy" voice cue, then light rein',
+            'Repeat transition 5× each direction — notice where your hands go',
+            'Cool down at walk: loose rein, praise horse for the try'],
+        ref:'Sally Swift, Centered Riding 2 — "Transitions & Breathing"'},
+     ],
+     milestone:'Execute a walk-trot-walk transition and a direction change using body + light neck rein cues',
+     refs:[
+       {icon:'📚',title:'Centered Riding 2',src:'Sally Swift',tip:'Chapter 2: Leg Awareness — practice the leg position exercises at home on a chair.'},
+       {icon:'📺',title:'Mind Your Horse',src:'YouTube Channel',tip:'Search "Join Up step by step" — replicate the exercise in your groundwork session.'},
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'"Desensitizing & Yielding the Hindquarters" — pair with your Week 2 groundwork session.'},
+     ]},
+
+    {week:3,theme:'Building — Leg Position & Trot Confidence',
+     focus:['Leg Position & Cues','Walk/Trot Transitions','Yielding Exercises'],
+     gwTitle:'Hindquarter Yields & Ground Obstacles',gwDur:'45–60 min',
+     gwSub:'Refine yield quality + build obstacle confidence from the ground',
+     gwEx:[
+       'Hindquarter yield: precision — ask for exactly 180° then stop and reward',
+       'Backup with straightness: 5 steps back in a straight line from ground',
+       'Ground poles: walk horse over 3 poles spaced 4 ft apart (both directions)',
+       'Tarp introduction: lay tarp flat, let horse approach at own pace — no forcing',
+       'Liberty invitation test: drop lead rope, walk away — does horse follow?',
+       'Forequarter + hindquarter sequence: yield fore → yield hind → backup → reward',
+     ],
+     gwRef:'4 Horsemanship Program Reference Guide — "Hindquarter Disengagement & Obstacle Confidence"',
+     rides:[
+       {title:'Figure 8 at Walk — Leg Position Focus',dur:'45–60 min',
+        sub:'Integrate leg, seat, and rein into fluid movement',
+        ex:['Warm-up: 10 min walk review of all 4 positions',
+            'Figure 8 pattern: walk 2 circles, change direction in the center',
+            'At each turn: use Leg Position 2 (forequarter) + look through the turn',
+            'Half-halt practice: squeeze-release to slow without stopping',
+            'Stop at center of 8: Position 4 seat → halt → 3 second pause → ask again',
+            'Increase: 3 complete figure 8s without breaking pace'],
+        ref:'Equestrian Program Fundamentals — Body Position Application at Walk'},
+       {title:'Trot Circles & Rhythm',dur:'45–60 min',
+        sub:'Find rhythm, don\'t chase it',
+        ex:['Warm-up trot: posting or sitting — choose what feels stable today',
+            'Count horse footfalls: 1-2-1-2, breathe on the "2"',
+            'Trot large circle (fence-side): stay off fence 3 feet to encourage bend',
+            'Sitting trot: relax hips, absorb — don\'t stiffen or brace',
+            'Transition drill: 3 trot-walk-trot sequences, count 3 walk steps between',
+            'Pattern: walk → trot → halt → walk → trot (repeat 4×)'],
+        ref:'Sally Swift, Centered Riding 2 — "The Trot & Sitting Trot"'},
+       {title:'Serpentine & Rein Independence',dur:'45–60 min',
+        sub:'Soft hands, busy legs — your new mantra',
+        ex:['Serpentine warm-up: 5 loop serpentine at walk using seat + leg first',
+            'Add trot: transition up at each loop apex',
+            'Reins test: hold reins in buckle for 3 trot strides — steering by leg only',
+            'Back up sequence: 5 steps, pause 3 sec, ask forward — clean transitions',
+            'Rein independence drill: leg on, rein soft — horse must respond to leg first'],
+        ref:'Mind Your Horse (YouTube) — "Leg Cues & Lateral Softness"'},
+     ],
+     milestone:'Complete a figure 8 at walk and trot using correct leg positions and body-first cues',
+     refs:[
+       {icon:'📚',title:'Centered Riding 2',src:'Sally Swift',tip:'Chapter 3: Leg Guidance — practice "soft leg" visualization before riding.'},
+       {icon:'📺',title:'Mind Your Horse',src:'YouTube Channel',tip:'Search "Tarp desensitization groundwork" for this week\'s obstacle session.'},
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'"Yield the Hindquarters Correctly" module — compare your technique this week.'},
+     ]},
+
+    {week:4,theme:'Application — Putting It All Together',
+     focus:['Pattern Riding','Liberty Connection','Canter Introduction (if ready)'],
+     gwTitle:'Liberty Work & Full Obstacle Course',gwDur:'45–60 min',
+     gwSub:'Drop the equipment — test the relationship',
+     gwEx:[
+       'Join Up at liberty in small round pen: no lead rope, ask with body language only',
+       'Direction changes: can you change horse direction with only your body?',
+       'Obstacle course on ground: 3 poles + cone pattern + tarp walk-over',
+       'Back horse through L-shape: set two poles in L, back horse through',
+       'Review full pressure & release sequence: 5 exercises in 10 min',
+       'End with follow-me exercise: walk away, stop, let horse approach — repeat 3×',
+     ],
+     gwRef:'All three resources: 4 Horsemanship liberty work modules + Mind Your Horse connection series',
+     rides:[
+       {title:'Full Pattern Ride',dur:'60 min',
+        sub:'Apply all 4 weeks — no excuses, no crutches',
+        ex:['Pattern: serpentine at walk → figure 8 at walk → halt → backup → trot circle',
+            'Transitions drill: walk-trot-walk-halt-walk all in sequence',
+            'Neck rein challenge: complete full figure 8 one-handed at trot',
+            'Leg position test: point to each leg position as you use it — name it',
+            'Relaxed walk finale: loose rein, let horse stretch neck down'],
+        ref:'Sally Swift, Centered Riding 2 — "Riding with Intention & Awareness"'},
+       {title:'Trail Prep & Obstacle Confidence',dur:'60 min',
+        sub:'Simulate the real world before you go out in it',
+        ex:['Walk over 3 ground poles without looking down',
+            'Side-pass along fence: leg position 3, horse moves away from leg laterally',
+            'Halt near "scary" object (bucket, flag): hold halt for 10 sec, breathe',
+            'Trail pattern: ride from cone A → cone B → around barrel → back to A',
+            'End with canter introduction (if ready): Position 1 + outside leg back + ask'],
+        ref:'Mind Your Horse (YouTube) — "Trail Obstacle Preparation"'},
+       {title:'Goal Review & Instructor Assessment',dur:'60 min',
+        sub:'This is your Week 4 benchmark ride',
+        ex:['Rider self-assessment: rate yourself 1–4 on all 12 skills — any change?',
+            'Focus ride: dedicate 20 min to your lowest-rated skill from the assessment',
+            'Showcase ride: demonstrate 3 improvements from Week 1',
+            'Set next 4-week goals with instructor',
+            'Celebrate progress: write 3 wins from this 4-week cycle'],
+        ref:'All three references — integrative application session'},
+     ],
+     milestone:'Complete a full riding pattern using all body + leg positions with minimal rein dependency',
+     refs:[
+       {icon:'📚',title:'Centered Riding 2',src:'Sally Swift',tip:'Re-read Chapter 1 — notice how differently it lands after 4 weeks of practice.'},
+       {icon:'📺',title:'Mind Your Horse',src:'YouTube Channel',tip:'Record a short video of yourself riding and compare to the channel\'s examples.'},
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Review "Putting the Pattern Together" — you\'re ready for the next series level.'},
+     ]},
+  ],
+
+  intermediate:[
+    {week:1,theme:'Refinement — Audit Your Weak Links',
+     focus:['Targeted Skill Work','Precision Under Saddle','Groundwork Connection'],
+     gwTitle:'Advanced Join Up & Liberty Audit',gwDur:'45–60 min',
+     gwSub:'Identify gaps in your groundwork communication',
+     gwEx:[
+       'Liberty join up: start without equipment in round pen — how many circles needed?',
+       'Timing audit: pressure & release — are you holding 1 second too long? Too short?',
+       'Lateral movement precision: forequarter yield in exactly 3 steps, no more',
+       'Hindquarter yield: disengage to halt — horse must stop ALL forward movement',
+       'Back up on a line: back 10 steps, keep horse\'s nose straight — no drifting',
+       'Obstacle challenge: introduce one new obstacle not previously used',
+     ],
+     gwRef:'4 Horsemanship Program Reference Guide — "Intermediate Groundwork Series"',
+     rides:[
+       {title:'Body Position Refinement Audit',dur:'60 min',
+        sub:'Feel the difference between each position — not just know it',
+        ex:['Ride each of the 4 positions at walk for 2 full minutes — what does horse do?',
+            'Position 2 depth test: can you drop your heels and still sit neutral?',
+            'Forward vs. Back Seat transition: feel horse back soften vs. drive under',
+            'Position 4 to halt: horse should halt within 3 strides of you sitting heavy',
+            'Identify your weakest position — dedicate 10 extra minutes to it',
+            'Ask instructor to observe: are you actually in the position you think you are?'],
+        ref:'Sally Swift, Centered Riding 2 — "Refining the Four Positions"'},
+       {title:'Leg Independence Drill',dur:'60 min',
+        sub:'Your leg should work independent of your hand — always',
+        ex:['Walk warm-up: isolate leg from rein — use leg only for first 5 min',
+            'Leg position 3 isolation: push hindquarters left, right, alternating',
+            'Scissor position: test — does horse collect without rein backup?',
+            'Trot with dropped reins for 30 seconds: steer by leg + weight only',
+            'Direction change with leg only: prove to yourself you don\'t need the rein',
+            'Note: what did the horse do when you removed the rein?'],
+        ref:'Program Fundamentals — Leg Position Independence Reference'},
+       {title:'Precision Transitions',dur:'60 min',
+        sub:'A good transition takes 1 stride, not 5',
+        ex:['Trot-walk audit: how many strides does your downward transition take?',
+            'Goal: trot-walk in 1 stride using Position 3 (Back Seat) only',
+            'Walk-halt: Position 4 → halt in 1 stride — grade yourself each time',
+            'Canter departure: correct lead first try both directions — what cues work?',
+            'Gait sequence drill: walk → trot → canter → trot → walk → halt, clean each'],
+        ref:'Sally Swift, Centered Riding 2 — "Transitions: The Rider\'s Vocabulary"'},
+     ],
+     milestone:'Execute walk-trot-canter-halt sequence on first cue with body-first communication',
+     refs:[
+       {icon:'📚',title:'Centered Riding 2',src:'Sally Swift',tip:'Chapter 4: Refining Feel — read before Week 1 riding sessions.'},
+       {icon:'📺',title:'Mind Your Horse',src:'YouTube Channel',tip:'Search "Timing your release correctly" — audit your own pressure and release timing.'},
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'"Intermediate Series: Improving Your Foundation" — pick the segment matching your weak skill.'},
+     ]},
+    {week:2,theme:'Precision — Neck Rein Mastery & Lateral Movement',
+     focus:['Neck Reining','Lateral Movement','One-Handed Riding'],
+     gwTitle:'Lateral Groundwork & Advanced Yields',gwDur:'45–60 min',
+     gwSub:'Ground work that directly transfers to lateral movement under saddle',
+     gwEx:[
+       'Sidepass from ground: stand at horse\'s shoulder, ask 5 lateral steps with no forward',
+       'Two-track exercise: ask horse to move forward AND laterally simultaneously',
+       'Forequarter yield at trot: send horse to trot, then ask for yield without stopping',
+       'Circle to stop: circle horse, step in front of path — horse stops and faces you',
+       'Advanced backup: back horse around a cone (curved backup)',
+       'Test join up speed: time from start to lick/chew — aim for under 3 minutes',
+     ],
+     gwRef:'Mind Your Horse (YouTube) — "Advanced Groundwork: Lateral Movement Series"',
+     rides:[
+       {title:'One-Handed Neck Rein Mastery',dur:'60 min',
+        sub:'Two hands are training wheels — Western riding is one hand',
+        ex:['Transition to one hand: gather both reins in dominant hand, pinky free',
+            'Figure 8 one-handed: complete without crossing reins or using outside rein',
+            'Neck rein pressure test: lay rein on neck — horse turns BEFORE you pull',
+            'Direct rein vs. neck rein: feel the difference, know when each is appropriate',
+            'Free hand drill: hold free hand on hip for 5 min while riding patterns'],
+        ref:'Program Fundamentals — Neck Reining Fundamentals 1–4'},
+       {title:'Lateral Movement Under Saddle',dur:'60 min',
+        sub:'Your leg is your most powerful tool',
+        ex:['Leg yield at walk: ask horse to travel forward and laterally (2-track)',
+            'Sidepass along fence: horse moves lateral only, no forward — use leg position 3',
+            'Haunches-in (hip swing): keep shoulders on track, swing hips to inside',
+            'Counter-bend exercise: bend horse away from direction of travel',
+            'Two-track trot: forward + lateral movement, maintain rhythm'],
+        ref:'Sally Swift, Centered Riding 2 — "Lateral Work & Leg Yielding"'},
+       {title:'Canter Work & Lead Changes',dur:'60 min',
+        sub:'The canter reveals everything about your seat',
+        ex:['Canter warm-up: 3 circles each direction, focus on sitting the lope',
+            'Simple lead change: canter → trot → walk → halt → pick up new lead',
+            'Counter-canter: deliberately pick up wrong lead, hold it — test your seat',
+            'Canter halt: sit Position 4, exhale, halt from canter in 3 strides or less',
+            'Flying lead change intro: canter, half-halt, switch leg aids simultaneously'],
+        ref:'Mind Your Horse (YouTube) — "Western Canter Work & Lead Departures"'},
+     ],
+     milestone:'Complete figure 8 one-handed with clean lead changes and neck rein-only direction',
+     refs:[
+       {icon:'📚',title:'Centered Riding 2',src:'Sally Swift',tip:'Chapter 5: Lateral Awareness — read the section on leg-to-rein coordination.'},
+       {icon:'📺',title:'Mind Your Horse',src:'YouTube Channel',tip:'Search "Sidepass groundwork" — practice the ground version before riding it.'},
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'"Lateral Flexion & Softness" series — matches directly with this week\'s riding goals.'},
+     ]},
+    {week:3,theme:'Partnership — Softness, Feel & Liberty Riding',
+     focus:['Soft Hands','Liberty Connection','Responsiveness'],
+     gwTitle:'Full Liberty Work — No Equipment',gwDur:'45–60 min',
+     gwSub:'The truth about your relationship with your horse',
+     gwEx:[
+       'Liberty in large space: no halter, no rope — test real communication',
+       'Multiple direction changes without touching horse: body language only',
+       'Long distance join up: stand 30 feet away — can horse find you from distance?',
+       'Liberty circle: ask horse to trot a circle around you with only body language',
+       'Approach and retreat: use pressure/release at 20-foot distance',
+       'End: sit on fence and wait — does horse come to you?',
+     ],
+     gwRef:'Mind Your Horse (YouTube) — "Liberty Horsemanship: Trust Without Equipment"',
+     rides:[
+       {title:'Soft Hands Challenge',dur:'60 min',
+        sub:'If your horse is stiff, check your hands first',
+        ex:['Ride with reins in the "rein hang" — held loosely like a necklace',
+            'Flexion test at halt: ask for soft give to each side — one finger only',
+            'Vertical flexion: ask nose to chest, release immediately at any give',
+            'Trot with open fingers: can you feel horse without squeezing?',
+            'One-rein stop practice: pick up one rein only, disengage hind, halt',
+            'Ride 5 minutes with eyes closed at walk — feel everything'],
+        ref:'Sally Swift, Centered Riding 2 — "Soft Hands & Contact"'},
+       {title:'Stop From Seat — No Reins',dur:'60 min',
+        sub:'Your body tells the horse everything before the rein does',
+        ex:['Stop drill: walk, sit heavy in Position 4, hold breath — horse halts?',
+            'Repeat 10× at walk: position 4 only, no rein — grade each halt',
+            'Add trot: trot, then back seat + exhale — how many strides to halt?',
+            'Goal: trot-to-halt in 2 strides with NO rein input',
+            'Back up: position 4 + close legs + softly squeeze rein — minimal contact',
+            'Loose rein canter: can you change gait with seat alone?'],
+        ref:'4 Horsemanship Program Reference Guide — "Developing the Seat Stop"'},
+       {title:'Pattern Mastery & Flow',dur:'60 min',
+        sub:'When riding flows, horse and rider disappear',
+        ex:['Barrel pattern at walk then trot: precision entry and exit at each barrel',
+            'Figure 8 with flying lead (if ready) or simple change at center',
+            'Freestyle pattern: make up a 5-element pattern, ride it 3 times',
+            'Ride 5 minutes with NO PLAN — respond to your horse in real time',
+            'Note: when did you feel most in sync with your horse today?'],
+        ref:'Sally Swift, Centered Riding 2 — "Rhythm, Flow & Connection"'},
+     ],
+     milestone:'Trot to halt in 2 strides using seat only; complete liberty work with no halter',
+     refs:[
+       {icon:'📚',title:'Centered Riding 2',src:'Sally Swift',tip:'Chapter 6: Connection & Rhythm — the most important chapter for intermediate riders.'},
+       {icon:'📺',title:'Mind Your Horse',src:'YouTube Channel',tip:'Search "Liberty groundwork basics" — film your liberty session and compare.'},
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'"Softening the Face at Liberty" — review before Week 3 groundwork session.'},
+     ]},
+    {week:4,theme:'Trail & Pattern Application — Real World Ready',
+     focus:['Trail Obstacles','Complex Patterns','Goal Achievement'],
+     gwTitle:'Trail Obstacle Course on Ground',gwDur:'45–60 min',
+     gwSub:'Build horse confidence before you face it in the saddle',
+     gwEx:[
+       'Ground poles: 6 poles in a fan pattern — walk horse through all lines',
+       'Narrow corridor: two barrels 3 feet apart — walk horse through without touching',
+       'Tarp walk: full tarp, horse walks over without stopping or rushing',
+       'Water obstacle sim: shallow pan of water or garden hose on ground',
+       'Flag desensitization: wave a flag at increasing distance until horse relaxes',
+       'Bridge simulation: 4 pallets side by side — walk horse across',
+     ],
+     gwRef:'4 Horsemanship Program Reference Guide — "Obstacle Confidence" advanced series',
+     rides:[
+       {title:'Trail Simulation Pattern',dur:'60 min',
+        sub:'Everything you\'ve built gets tested here',
+        ex:['Set up mini trail course in arena: poles, narrow gate, turnaround, bridge',
+            'Walk through once, assess horse reaction — where does energy spike?',
+            'Trot approach to each obstacle, walk through, trot out',
+            'One-handed all obstacles: prove neck rein in "real" situations',
+            'Spook recovery drill: simulate a sudden noise, one-rein stop, regroup'],
+        ref:'Mind Your Horse (YouTube) — "Trail Riding Preparation" playlist'},
+       {title:'Complex Pattern Work',dur:'60 min',
+        sub:'Advanced riders are defined by their patterns',
+        ex:['Reining pattern intro: large circles slow, large circles fast, simple change',
+            'Western pleasure pattern: walk-jog-lope transitions on cue',
+            'Showmanship on foot: square up horse, judge walk-around simulation',
+            'Barrel racing approach: walk the pattern, then jog it, then lope',
+            'Time your pattern: first slow run for muscle memory'],
+        ref:'4 Horsemanship Program Reference Guide — "Western Patterns & Precision"'},
+       {title:'4-Week Review & Next Goal Setting',dur:'60 min',
+        sub:'Where you are is not where you\'re going',
+        ex:['Benchmark ride: re-ride your Week 1 pattern — feel the difference',
+            'Re-rate yourself on all 12 skills — how many improved?',
+            'Identify top 2 skills for next 4 weeks',
+            'Instructor notes: what changed, what remains the focus',
+            'Set next milestone: what specific goal in 4 more weeks?'],
+        ref:'All three resources — integrated review session'},
+     ],
+     milestone:'Complete trail simulation course one-handed at trot with horse confidence throughout',
+     refs:[
+       {icon:'📚',title:'Centered Riding 2',src:'Sally Swift',tip:'Revisit your top weakness chapter — what lands differently now?'},
+       {icon:'📺',title:'Mind Your Horse',src:'YouTube Channel',tip:'Record your Week 4 ride — compare to Week 1 if you recorded that too.'},
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Advance to the next program level — you\'ve earned it.'},
+     ]},
+  ],
+
+  advanced:[
+    {week:1,theme:'Mastery Check — Identify Your Precision Gaps',
+     focus:['Advanced Communication','Precision Groundwork','Refinement Targets'],
+     gwTitle:'Advanced Liberty & Precision Audit',gwDur:'45–60 min',
+     gwSub:'Mastery is measured in millimeters, not miles',
+     gwEx:[
+       'Liberty join up with distance: 60-foot pen, join up under 2 minutes',
+       'Precision yield: stop hindquarters at exact point (use cones as targets)',
+       'Long-line work: 25-foot line, maintain consistent circle — no drift in/out',
+       'Obstacle at liberty: ask horse to negotiate obstacle with no touching',
+       'Timing precision: pressure on → horse tries → release in under 0.5 seconds',
+       'Liberty canter: ask for canter from liberty, maintain for 3 circles',
+     ],
+     gwRef:'4 Horsemanship Program Reference Guide — "Advanced Groundwork & Liberty" series',
+     rides:[
+       {title:'Full Skill Audit at All Gaits',dur:'60–90 min',
+        sub:'Film this ride — you need objective data on your gaps',
+        ex:['Film or have someone watch: ride all gaits, all transitions',
+            'Grade each body position 1–10 in real time',
+            'Transition audit: how many strides does each transition take? (Goal: 1)',
+            'Hand independence: drop reins for 30 strides at each gait',
+            'Identify the ONE skill that, if improved, raises everything else'],
+        ref:'Sally Swift, Centered Riding 2 — "Advanced Position Refinement"'},
+       {title:'Precision Transitions & Collection',dur:'60–90 min',
+        sub:'Collection is not a headset — it\'s engagement from behind',
+        ex:['Walk to collected walk: shorten stride without losing rhythm',
+            'Jog vs. extended trot: feel the difference in your seat and core',
+            'Collection from halt: move immediately to collected canter from halt',
+            'Half-halts at canter: 5 half-halts in a circle — feel horse round up',
+            'Counter-canter 2 laps without breaking — test your balance and aids'],
+        ref:'4 Horsemanship Program Reference Guide — "Collection & Advanced Transitions"'},
+       {title:'Advanced Pattern Work',dur:'60–90 min',
+        sub:'Patterns reveal everything your horse knows and everything you don\'t',
+        ex:['Full reining pattern (modified): circles, lead change, rundown, stop',
+            'Western horsemanship pattern: set up a 6-cone pattern, ride precisely',
+            'Leg yield zigzag: 3 strides left, 3 strides right, no loss of forward',
+            'Halt from canter: 2 strides or less using seat — no rein',
+            'Rollback intro: canter → stop → 180° turn → canter new direction'],
+        ref:'Mind Your Horse (YouTube) — "Advanced Pattern Work & Show Prep"'},
+     ],
+     milestone:'Film a full audit ride; identify 2 precision targets for Weeks 2–4',
+     refs:[
+       {icon:'📚',title:'Centered Riding 2',src:'Sally Swift',tip:'Chapter 7: Advanced Balance — re-read with the eye of an advanced student.'},
+       {icon:'📺',title:'Mind Your Horse',src:'YouTube Channel',tip:'Search "Advanced liberty work" — measure yourself against these standards.'},
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Start the "Advanced Series" — your foundation is ready for this level.'},
+     ]},
+    {week:2,theme:'Advanced Liberty & Complex Groundwork',
+     focus:['Liberty at Distance','Multi-Element Ground Patterns','Precision Communication'],
+     gwTitle:'Liberty Complex — Multiple Cues',gwDur:'45–60 min',
+     gwSub:'One body language cue should produce one precise response',
+     gwEx:[
+       'Liberty in large arena (not round pen): join up in open space',
+       'Ask for trot from 20 feet away with body language only',
+       'Complex pattern on ground: walk → trot → direction change → stop (all at liberty)',
+       'Multiple horse responses: lick, chew, drop head, yawn — identify each signal',
+       'Obstacle course at liberty: horse navigates 4 obstacles with only your pointing',
+       'End: sit in center of arena — how long until horse stands with you?',
+     ],
+     gwRef:'Mind Your Horse (YouTube) — "Advanced Liberty: Patterns & Precision"',
+     rides:[
+       {title:'Shoulder-In & Shoulder-Fore',dur:'60–90 min',
+        sub:'Lateral work is the foundation of collection',
+        ex:['Shoulder-fore at walk: track 2 hoofprints instead of 4 (slight angle)',
+            'Shoulder-in at walk: 3-track movement, horse bent around inside leg',
+            'Feel test: is inside hind stepping under toward outside front?',
+            'Shoulder-in to trot: maintain shoulder-in through upward transition',
+            'Haunches-in (travers): move horse\'s hindquarters off the track',
+            'Half-pass intro: shoulder-in diagonal — move both forequarters and hind'],
+        ref:'Sally Swift, Centered Riding 2 — "Lateral Work at the Advanced Level"'},
+       {title:'Sliding Stop Foundation',dur:'60–90 min',
+        sub:'The stop starts at the walk — always',
+        ex:['Walk stop quality: 100% seat stops, no rein contact at all — 20 reps',
+            'Jog stop: same — seat only, 20 reps, count strides (goal: 1)',
+            'Lope stop: rate back, exhale, sit deep — feel hind legs engage under',
+            'Straight line requirement: horse must stop in a perfectly straight line',
+            'Turnaround after stop: lope → stop → rollback → lope new direction'],
+        ref:'4 Horsemanship Program Reference Guide — "The Western Sliding Stop Foundation"'},
+       {title:'Advanced Canter & Flying Changes',dur:'60–90 min',
+        sub:'Flying lead changes are a test of timing, not force',
+        ex:['Confirm simple lead changes: perfect simple change every time',
+            'Counter-canter 3 laps: total balance control before flying change',
+            'Flying change aids: half-halt, new outside leg back, new inside leg forward',
+            'First flying change attempt: relax, trust the timing, release immediately',
+            'Note: did horse change front, back, or both? Each means something different'],
+        ref:'Mind Your Horse (YouTube) — "Flying Lead Changes for Western Riders"'},
+     ],
+     milestone:'Achieve shoulder-in at trot and clean flying lead changes both directions',
+     refs:[
+       {icon:'📚',title:'Centered Riding 2',src:'Sally Swift',tip:'Chapter 8: Collected Work — essential reading this week before you ride.'},
+       {icon:'📺',title:'Mind Your Horse',src:'YouTube Channel',tip:'Film your flying lead change attempts — send to your coach or compare to channel.'},
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'"Flying Lead Changes Step by Step" — review the full sequence before riding.'},
+     ]},
+    {week:3,theme:'Finesse — Whisper-Quiet Aids',
+     focus:['Invisible Aids','Seat as Primary Communicator','Feather-Touch Hands'],
+     gwTitle:'Zero-Pressure Liberty & Advanced Obstacles',gwDur:'45–60 min',
+     gwSub:'Can your horse read your mind? Get closer.',
+     gwEx:[
+       'Zero-pressure approach: walk to horse in pasture with zero body tension',
+       'Liberty at full walk/trot/canter on your ask alone — film it',
+       'Advanced obstacle: trot horse over a narrow bridge then immediately halt',
+       'Point to object, horse goes to it: advanced communication test',
+       'Night/strange environment: work horse in a new location — test trust',
+       'Silence practice: 20 minutes of work with no verbal cues at all',
+     ],
+     gwRef:'Mind Your Horse (YouTube) — "Advanced Liberty: Invisible Aids"',
+     rides:[
+       {title:'One-Finger Riding',dur:'60–90 min',
+        sub:'If one finger is too much, use your seat',
+        ex:['Ride with one finger on each rein for entire session',
+            'Halt test: one-finger pressure to halt — if horse needs more, go back to seat',
+            'Direction change: one finger neck rein only — no second rein backup',
+            'Flexion: one finger to poll — can horse flex without neck muscle bracing?',
+            'Trot one-finger serpentine: 5 loops, minimal rein input'],
+        ref:'Sally Swift, Centered Riding 2 — "Feel: The Advanced Rider\'s Secret"'},
+       {title:'Seat-Only Riding Challenge',dur:'60–90 min',
+        sub:'Drop the reins. Find out who your horse really trusts.',
+        ex:['Walk with loose draping reins: steer with leg + weight only (10 min)',
+            'Trot with loose reins: maintain for 5 complete circles each direction',
+            'Canter with loose reins: maintain gait, rhythm, straight line (30 sec)',
+            'Gait change: walk → trot → canter → halt using SEAT ONLY',
+            'Grade: how many transitions were initiated by seat with zero rein? Aim for 80%'],
+        ref:'4 Horsemanship Program Reference Guide — "The Art of the Seat Stop"'},
+       {title:'Complex Freestyle Pattern',dur:'60–90 min',
+        sub:'Improvisation at the advanced level is controlled mastery',
+        ex:['Design a 10-element freestyle pattern (write it down first)',
+            'Ride it 3 times: first slow for memory, then precision, then feel',
+            'Add a "challenge element": something slightly outside comfort zone',
+            'Film your best run — watch for invisible aid moments',
+            'Reflect: when did you and your horse feel like one?'],
+        ref:'All three references — advanced integration ride'},
+     ],
+     milestone:'Complete a full canter pattern using seat-only transitions and one-finger rein contact',
+     refs:[
+       {icon:'📚',title:'Centered Riding 2',src:'Sally Swift',tip:'Final chapters: Feel & Partnership — read the whole section this week.'},
+       {icon:'📺',title:'Mind Your Horse',src:'YouTube Channel',tip:'Review "One-rein stop and beyond" — test your feel compared to these standards.'},
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'"Lightness & Feel" series — this is the pinnacle of the 4 Horsemanship system.'},
+     ]},
+    {week:4,theme:'Goal Achievement — Competition / Trail / Performance Ready',
+     focus:['Goal-Specific Application','Full Rehearsal','Benchmark & Next Level'],
+     gwTitle:'Competition / Trail Environment Prep',gwDur:'45–60 min',
+     gwSub:'Simulate your goal environment from the ground first',
+     gwEx:[
+       'Loud environment prep: play music or crowd noise — keep horse relaxed',
+       'Flags, banners, strangers: desensitize to show/trail environment stimuli',
+       'Load/trailer practice: load, stand quietly 5 min, unload — 3 reps',
+       'High-energy warm-up: simulate pre-class warm-up pen energy',
+       'Buddy horse work: practice with another horse at liberty/close quarters',
+       'Review all obstacles: quick run through entire 4-week obstacle list',
+     ],
+     gwRef:'4 Horsemanship Program Reference Guide — "Competition & Trail Preparation"',
+     rides:[
+       {title:'Full Goal Rehearsal',dur:'60–90 min',
+        sub:'This is your dress rehearsal — ride it like it counts',
+        ex:['Ride your exact goal scenario (show pattern / trail route / competition prep)',
+            'Simulate class order: warm-up → pattern → cool-down routine',
+            'Film the full rehearsal: watch it back, find your 2 improvements',
+            'Ride it again with corrections: see if they hold under "pressure"',
+            'End clean: end the session on a perfect moment, even if small'],
+        ref:'Mind Your Horse (YouTube) — "Mental Preparation for Horse Shows & Trail"'},
+       {title:'Advanced Skill Integration',dur:'60–90 min',
+        sub:'Everything you practiced — on demand, first ask',
+        ex:['10-skill challenge: pick 10 skills, do each once, grade first attempt only',
+            'Test the whisper: can you move from walk to canter with body only?',
+            'Competition pressure drill: ride with someone watching — reproduce your best',
+            'Partner ride: ride with another horse (if available) — stay connected',
+            'Final liberty check: same liberty session as Week 1 — how much improved?'],
+        ref:'Sally Swift, Centered Riding 2 — "The Partnership"'},
+       {title:'4-Week Benchmark & Planning',dur:'60 min',
+        sub:'The rider who tracks their progress accelerates their growth',
+        ex:['Re-rate all 12 skills — required',
+            'Compare to Week 1 scores: calculate your improvement points',
+            'Identify: which skill has the highest ceiling for next cycle?',
+            'Set concrete next goal: with date, specific measurable outcome',
+            'Document your horse\'s progress: what changed in your partnership?'],
+        ref:'All three references — advanced goal-setting session'},
+     ],
+     milestone:'Execute goal-specific performance (show/trail/competition) as a complete, refined unit',
+     refs:[
+       {icon:'📚',title:'Centered Riding 2',src:'Sally Swift',tip:'This book grows with you — there is always something new to find in these pages.'},
+       {icon:'📺',title:'Mind Your Horse',src:'YouTube Channel',tip:'Subscribe and keep watching — this channel grows with your level.'},
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'You\'re ready for the advanced program level — advance with confidence.'},
+     ]},
+  ],
+};
+
+// ─── FOUR HORSEMANSHIP — HORSE TRAINING PLAN (Trainer 1–2x/wk + Owner 3x+/wk) ─
+// Trainer sessions introduce/refine exercises; Owner sessions repeat 3+×/week to reinforce;
+// Daily checklist items happen every day regardless of a formal session.
+const HORSE_PLAN = {
+  stage1:[
+    {week:1,theme:'Foundation — Safety & Desensitizing',
+     focus:['Round Penning','Desensitizing to Rope','Desensitizing to Stick & String'],
+     trainerTitle:'Round Pen Fundamentals & Desensitizing',trainerDur:'45–60 min (1–2x this week)',
+     trainerSub:'Establish leadership in the round pen, then build trust through the rope and stick & string',
+     trainerEx:[
+       'Round pen: send horse away both directions at walk/trot, read ears/head for relaxation before approach',
+       'Approach & halter only once horse settles — reward with an immediate release',
+       'Desensitize to the rope: rub and swing over neck, body, and legs until horse stands still',
+       'Desensitize to stick & string: introduce as an extension of your arm — touch, rub, swing until no reaction',
+       'Record a baseline video and written notes for the owner to reference at home',
+     ],
+     trainerRef:'4 Horsemanship Program Reference Guide — "Round Penning & Desensitizing" (4H Groundwork Series)',
+     ownerTitle:'Reinforce Round Pen & Desensitizing',ownerDur:'20–30 min (3x+ this week)',
+     ownerSub:'Repeat exactly what the trainer showed you — consistency builds trust',
+     ownerEx:[
+       '5 min round pen warm-up: send both directions, watch for licking/chewing (relaxation signals)',
+       'Rope desensitizing: rub over head, neck, body, legs — 2 minutes each side, retreat if horse tenses',
+       'Stick & string desensitizing: touch and rub calmly, only advance once horse is relaxed',
+       'Log the horse\'s response in the app after each session: calm / mild reaction / strong reaction',
+     ],
+     ownerRef:'Same reference material as trainer session — repetition, not new material, this week',
+     daily:['Halter & lead calmly — 2 minutes of quiet standing before doing anything else','One rope rub-down before turning out or putting away','Note any behavior changes for the trainer'],
+     milestone:'Horse stands relaxed for rope and stick & string desensitizing over the entire body',
+     refs:[
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Review "Round Penning" and "Desensitizing to the Rope" before your first owner session.'},
+       {icon:'📋',title:'4 Horsemanship Stage 1',src:'Program Reference Guide',tip:'Keep the Stage 1 checklist posted in the barn — check off each exercise as it\'s introduced.'},
+     ]},
+    {week:2,theme:'Foundation — Yielding the Hindquarters & Forequarters',
+     focus:['Yielding the Hindquarters','Yielding the Forequarters'],
+     trainerTitle:'Yielding Fore & Hind',trainerDur:'45–60 min (1–2x this week)',
+     trainerSub:'Teach the horse to move each end of its body away from pressure, both directions',
+     trainerEx:[
+       'Warm-up: round pen + rope/stick desensitizing review (2–3 min)',
+       'Yield the hindquarters: apply pressure at the hip, ask for crossing hind legs, both directions',
+       'Yield the forequarters: apply pressure at the poll/neck, ask for crossing front legs, both directions',
+       'Combine: yield hindquarters → yield forequarters → back up 3 steps, reward the try',
+       'Note which direction is stiffer — flag it for extra owner reps',
+     ],
+     trainerRef:'4 Horsemanship Program Reference Guide — "Yielding the Hindquarters & Forequarters" (4H Groundwork Series)',
+     ownerTitle:'Reinforce Yielding Exercises',ownerDur:'20–30 min (3x+ this week)',
+     ownerSub:'Precision matters more than speed — ask once, wait, reward the try',
+     ownerEx:[
+       'Warm-up: round pen 2–3 min + quick rope rub-down',
+       'Yield hindquarters both directions: 3 clean reps each side',
+       'Yield forequarters both directions: 3 clean reps each side',
+       'Extra reps on the stiffer side the trainer flagged',
+       'Log reps completed and which side felt easier/harder',
+     ],
+     ownerRef:'Same reference material as trainer session',
+     daily:['One hindquarter yield + one forequarter yield before leading in/out of the stall or pasture','Quiet haltering — no rushing','Note stiffness or resistance for the trainer'],
+     milestone:'Horse yields hindquarters and forequarters smoothly in both directions off light pressure',
+     refs:[
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Review "Yielding the Hindquarters" and "Yielding the Forequarters" before this week\'s owner sessions.'},
+       {icon:'📋',title:'4 Horsemanship Stage 1',src:'Program Reference Guide',tip:'Check off both yielding exercises once the horse rates Intermediate (3) or better in both directions.'},
+     ]},
+    {week:3,theme:'Foundation — Backing Up & Lunging for Respect Stage 1',
+     focus:['Backing Up','Lunging for Respect — Stage 1'],
+     trainerTitle:'Backing Up & Lunging for Respect',trainerDur:'45–60 min (1–2x this week)',
+     trainerSub:'Build respect for personal space and controlled movement on the line',
+     trainerEx:[
+       'Warm-up: yield hindquarters + forequarters, one rep each direction',
+       'Backing up: rhythmic pressure toward the chest, send horse back straight — 5 reps',
+       'Lunging for Respect Stage 1: send out on the line, control speed and direction changes at walk/trot',
+       'Combine: lunge → ask for halt → back up 3 steps → release',
+       'Identify any rushing or dragging on the line — flag for owner focus',
+     ],
+     trainerRef:'4 Horsemanship Program Reference Guide — "Backing Up" & "Lunging for Respect Stage 1" (4H Groundwork Series)',
+     ownerTitle:'Reinforce Backing & Lunging',ownerDur:'20–30 min (3x+ this week)',
+     ownerSub:'Straight lines and calm transitions — no chasing, no dragging',
+     ownerEx:[
+       'Backing up: 5 reps straight back, release the instant the horse steps back',
+       'Lunge for Respect Stage 1: both directions at walk, transition to trot if calm',
+       'Halt-and-back combination: lunge → halt → back 3 steps',
+       'Log any rushing (too fast) or dragging (too slow) on the line',
+     ],
+     ownerRef:'Same reference material as trainer session',
+     daily:['3 backing-up steps before turning out or bringing in','One direction change on the line if time allows','Note line behavior for the trainer'],
+     milestone:'Horse backs up straight on light pressure and lunges calmly at walk/trot with clean transitions',
+     refs:[
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Review "Lunging for Respect Stage 1" — pay attention to the transitions, not just the gait.'},
+       {icon:'📋',title:'4 Horsemanship Stage 1',src:'Program Reference Guide',tip:'A horse that rushes or drags on the line is not ready for Stage 2 — keep repeating this week if needed.'},
+     ]},
+    {week:4,theme:'Foundation — Flexing & Stage 1 Graduation Check',
+     focus:['Flexing the Head and Neck','Full Stage 1 Combination'],
+     trainerTitle:'Flexing & Full Stage 1 Assessment',trainerDur:'45–60 min (1–2x this week)',
+     trainerSub:'Add the final Stage 1 exercise, then run the full sequence to confirm readiness for Stage 2',
+     trainerEx:[
+       'Flexing the head and neck: ask nose toward the girth each side, reward the softest give',
+       'Full Stage 1 sequence: round pen → desensitize → yield hind → yield fore → back up → lunge → flex',
+       'Re-rate all 8 Stage 1 exercises in the app with the owner present',
+       'If every exercise rates Intermediate (3) or better, confirm the horse is ready for Stage 2',
+       'If any exercise is below 3, assign it as the owner\'s primary focus for an extra week',
+     ],
+     trainerRef:'4 Horsemanship Program Reference Guide — "Flexing the Head and Neck" (4H Groundwork Series)',
+     ownerTitle:'Flexing Practice & Stage 1 Polish',ownerDur:'20–30 min (3x+ this week)',
+     ownerSub:'Smooth out whichever Stage 1 exercise still feels inconsistent',
+     ownerEx:[
+       'Flexing: ask for a soft give on each side, release the instant the horse gives',
+       'Run the full Stage 1 sequence once per session, end-to-end',
+       'Spend extra reps on the trainer\'s flagged weak exercise',
+       'Log honest 1–4 ratings for each of the 8 Stage 1 exercises before the next trainer visit',
+     ],
+     ownerRef:'Same reference material as trainer session',
+     daily:['One flexion rep each side before haltering for turnout','Full Stage 1 sequence at least once if time allows','Submit updated ratings before the Week 4 trainer visit'],
+     milestone:'Horse flexes softly both directions and completes the full Stage 1 sequence at Intermediate (3) or better on every exercise',
+     refs:[
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Revisit any Stage 1 module where the horse is still below Intermediate before the graduation check.'},
+       {icon:'📋',title:'4 Horsemanship Stage 1',src:'Program Reference Guide',tip:'Graduation to Stage 2 requires 3+ on all 8 exercises — don\'t rush it.'},
+     ]},
+  ],
+  stage2:[
+    {week:1,theme:'Development — Sending & Circle Driving',
+     focus:['Sending Exercise','Circle Driving'],
+     trainerTitle:'Sending & Circle Driving',trainerDur:'45–60 min (1–2x this week)',
+     trainerSub:'Build trust in moving away from the handler and refine driving from behind',
+     trainerEx:[
+       'Warm-up: quick Stage 1 review — yield hind, yield fore, back up',
+       'Sending exercise: direct horse to move away between you and a fence/obstacle in a straight line',
+       'Circle driving: drive horse in a circle using stick & string body position, both directions',
+       'Combine: send → circle drive → call horse back in and reward',
+       'Note hesitation or rushing during the send — flag for owner reps',
+     ],
+     trainerRef:'4 Horsemanship Program Reference Guide — "Sending Exercise" & "Circle Driving" (4H Groundwork Series)',
+     ownerTitle:'Reinforce Sending & Circle Driving',ownerDur:'20–30 min (3x+ this week)',
+     ownerSub:'Confidence moving away from you is the goal — patience over speed',
+     ownerEx:[
+       'Quick Stage 1 refresher: one yield hind, one yield fore',
+       'Sending exercise: 3 clean reps past the obstacle in a straight line',
+       'Circle driving both directions, focus on smooth speed control',
+       'Log hesitation, rushing, or clean reps for the trainer',
+     ],
+     ownerRef:'Same reference material as trainer session',
+     daily:['One sending rep before turnout','Note energy level at start of each session'],
+     milestone:'Horse sends confidently in a straight line and circle drives calmly both directions',
+     refs:[
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Review "Sending Exercise" closely — the goal is confidence, not speed.'},
+       {icon:'📋',title:'4 Horsemanship Stage 2',src:'Program Reference Guide',tip:'A horse that won\'t send in a straight line needs more Stage 1 desensitizing before continuing.'},
+     ]},
+    {week:2,theme:'Development — Lunging for Respect Stage 2 & Leading Beside',
+     focus:['Lunging for Respect — Stage 2','Leading Beside'],
+     trainerTitle:'Advanced Lunging & Leading Beside',trainerDur:'45–60 min (1–2x this week)',
+     trainerSub:'Add distance and precision to lunging, then refine leading position',
+     trainerEx:[
+       'Lunging for Respect Stage 2: direction changes and gait transitions with less physical contact',
+       'Leading beside: horse matches your shoulder position without crowding or lagging',
+       'Practice halting together — horse stops the instant you stop, no cue needed',
+       'Combine lunge Stage 2 with a clean transition into leading beside',
+       'Flag crowding or dragging behavior for extra owner focus',
+     ],
+     trainerRef:'4 Horsemanship Program Reference Guide — "Lunging for Respect Stage 2" & "Leading Beside" (4H Groundwork Series)',
+     ownerTitle:'Reinforce Advanced Lunging & Leading',ownerDur:'20–30 min (3x+ this week)',
+     ownerSub:'Leading beside is a daily-life skill — practice it every time you handle the horse',
+     ownerEx:[
+       'Lunge for Respect Stage 2: both directions, 2 gait transitions each',
+       'Leading beside: walk 20+ steps at your shoulder without crowding or lagging',
+       'Halt together 3 times — no verbal or rope cue if possible',
+       'Log crowding, lagging, or clean reps',
+     ],
+     ownerRef:'Same reference material as trainer session',
+     daily:['Every walk to/from the pasture is a leading-beside rep — hold the standard','One halt-together rep per trip'],
+     milestone:'Horse lunges through direction/gait changes calmly and leads beside without crowding or lagging',
+     refs:[
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Review "Leading Beside" — most handling problems trace back to this one skill.'},
+       {icon:'📋',title:'4 Horsemanship Stage 2',src:'Program Reference Guide',tip:'Make leading beside the standard for every single walk, not just during formal sessions.'},
+     ]},
+    {week:3,theme:'Development — Step and Walk & Helicopter Exercise',
+     focus:['Step and Walk','Helicopter Exercise'],
+     trainerTitle:'Distraction & Desensitizing Under Motion',trainerDur:'45–60 min (1–2x this week)',
+     trainerSub:'Build focus while moving and desensitize to fast movement near the head',
+     trainerEx:[
+       'Step and Walk: touch/slap the horse lightly with the rope while it keeps walking calmly',
+       'Helicopter exercise: swing the lead rope in a circle over/around the head, both directions',
+       'Combine: walk → step and walk touch → continue without stopping',
+       'Rest and reward any moment the horse stays relaxed through the exercise',
+       'Flag any spooking or head-raising for extra owner reps at a lower intensity',
+     ],
+     trainerRef:'4 Horsemanship Program Reference Guide — "Slap and Walk" & "Helicopter Exercise" (4H Groundwork Series)',
+     ownerTitle:'Reinforce Step and Walk & Helicopter',ownerDur:'20–30 min (3x+ this week)',
+     ownerSub:'Start at a lower intensity than the trainer if the horse is still unsure — build up gradually',
+     ownerEx:[
+       'Step and Walk: light touches while leading forward, 5 reps',
+       'Helicopter exercise: slow rope swings near (not on) the head first, build to full exercise',
+       'Reward every moment of relaxation — stop before the horse gets anxious',
+       'Log intensity level used and horse\'s reaction',
+     ],
+     ownerRef:'Same reference material as trainer session',
+     daily:['One light Step and Walk touch during normal leading','Watch for tension around the head/ears and note it'],
+     milestone:'Horse stays relaxed through Step and Walk and Helicopter exercise without stopping or spooking',
+     refs:[
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Review "Helicopter Exercise" fully before attempting it — timing and distance matter for safety.'},
+       {icon:'📋',title:'4 Horsemanship Stage 2',src:'Program Reference Guide',tip:'Never push through a spook — retreat, lower intensity, and rebuild confidence gradually.'},
+     ]},
+    {week:4,theme:'Development — Head Shy Exercise & Stage 2 Graduation Check',
+     focus:['Head Shy Exercise','Full Stage 2 Combination'],
+     trainerTitle:'Head Shy Exercise & Full Stage 2 Assessment',trainerDur:'45–60 min (1–2x this week)',
+     trainerSub:'Finish desensitizing the face and ears, then confirm Stage 2 readiness for Stage 3',
+     trainerEx:[
+       'Head shy exercise: rub and touch around ears, poll, and face until no flinching',
+       'Full Stage 2 sequence: send → circle drive → lunge Stage 2 → lead beside → step & walk → helicopter → head shy',
+       'Re-rate all 7 Stage 2 exercises in the app with the owner present',
+       'If every exercise rates Intermediate (3) or better, confirm the horse is ready for Stage 3 (riding integration)',
+       'If any exercise is below 3, assign it as the owner\'s primary focus for an extra week',
+     ],
+     trainerRef:'4 Horsemanship Program Reference Guide — "Head Shy Exercise" (4H Groundwork Series)',
+     ownerTitle:'Head Shy Practice & Stage 2 Polish',ownerDur:'20–30 min (3x+ this week)',
+     ownerSub:'Faces and ears take patience — never force it, just repeat calmly',
+     ownerEx:[
+       'Head shy exercise: rub around ears/poll/face, retreat before any flinch, then return',
+       'Run the full Stage 2 sequence once per session, end-to-end',
+       'Spend extra reps on the trainer\'s flagged weak exercise',
+       'Log honest 1–4 ratings for each of the 7 Stage 2 exercises before the next trainer visit',
+     ],
+     ownerRef:'Same reference material as trainer session',
+     daily:['One head shy rub-around before haltering','Full Stage 2 sequence at least once if time allows','Submit updated ratings before the Week 4 trainer visit'],
+     milestone:'Horse accepts head/ear handling calmly and completes the full Stage 2 sequence at Intermediate (3) or better on every exercise',
+     refs:[
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Revisit any Stage 2 module where the horse is still below Intermediate before the graduation check.'},
+       {icon:'📋',title:'4 Horsemanship Stage 3',src:'Program Reference Guide',tip:'Graduating to Stage 3 means implementing this exact groundwork under saddle — nothing new, just applied while riding.'},
+     ]},
+  ],
+  stage3:[
+    {week:1,theme:'Riding Integration — Flexion & One Rein Stops',
+     focus:['Flexing at the Standstill','One Rein Stops','Vertical Flexion at the Standstill'],
+     trainerTitle:'Mounted Flexion & Emergency Stop',trainerDur:'45–60 min (1–2x this week)',
+     trainerSub:'Move the ground flexion work into the saddle and install the one-rein safety stop',
+     trainerEx:[
+       'Pre-ride: quick groundwork check — yield hind, yield fore, flex head and neck',
+       'Mount and flex at the standstill: ask for lateral give each side, reward the softest response',
+       'Vertical flexion at the standstill: ask nose toward chest, release at the first give',
+       'One rein stop: pick up one rein, disengage the hindquarters, come to a full stop — practice both directions',
+       'End with 5 minutes of relaxed walk, loose rein',
+     ],
+     trainerRef:'4 Horsemanship Program Reference Guide — "Flexing at the Standstill" & "One Rein Stops" (4H Groundwork Series)',
+     ownerTitle:'Reinforce Mounted Flexion & One Rein Stop',ownerDur:'30–45 min (3x+ this week)',
+     ownerSub:'The one-rein stop is your safety net — practice it until it is automatic',
+     ownerEx:[
+       'Pre-ride groundwork check: 1 yield each direction',
+       'Flexing at the standstill: 3 reps each side, reward the give',
+       'Vertical flexion at the standstill: 3 reps, release at first give',
+       'One rein stop: 3 reps each direction at halt/walk only',
+       'Log how many reps needed a rein "reminder" vs. a soft response',
+     ],
+     ownerRef:'Same reference material as trainer session',
+     daily:['One flexion rep and one vertical flexion rep before mounting','Confirm the one rein stop works before riding out of the arena'],
+     milestone:'Rider can flex the horse laterally and vertically at the standstill and execute a clean one rein stop both directions',
+     refs:[
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Review "One Rein Stops" before your first ride this week — safety first.'},
+       {icon:'📋',title:'4 Horsemanship Stage 3',src:'Program Reference Guide',tip:'Every rider on this horse should be able to execute a one rein stop before riding solo.'},
+     ]},
+    {week:2,theme:'Riding Integration — Yields & Stops',
+     focus:['Yield the Hindquarters from a Standstill','Yield to a Stop','Draw to a Stop','Yield the Hindquarters and Back Up'],
+     trainerTitle:'Mounted Yields & Soft Stops',trainerDur:'45–60 min (1–2x this week)',
+     trainerSub:'Apply groundwork yields under saddle to create soft, seat-driven stops',
+     trainerEx:[
+       'Pre-ride groundwork check, then mount',
+       'Yield the hindquarters from a standstill: leg pressure asks the hind end to step over, both directions',
+       'Yield to a stop: use a hindquarter yield to bring the horse down to a stop instead of pulling reins',
+       'Draw to a stop: seat + light rein contact draws the horse down smoothly',
+       'Yield the hindquarters and back up: combine a yield with an immediate straight backup',
+     ],
+     trainerRef:'4 Horsemanship Program Reference Guide — "Yield the Hindquarters" & "Draw to a Stop" (4H Groundwork Series, ridden application)',
+     ownerTitle:'Reinforce Mounted Yields & Stops',ownerDur:'30–45 min (3x+ this week)',
+     ownerSub:'Soft stops start with the seat, not the hands — give the yield a chance to work first',
+     ownerEx:[
+       'Yield hindquarters from standstill: 3 reps each direction',
+       'Yield to a stop: 3 reps at walk',
+       'Draw to a stop: 3 reps, seat first, rein only if needed',
+       'Yield hindquarters + back up combo: 3 reps',
+       'Log which stop felt cleanest (yield vs. draw vs. rein)',
+     ],
+     ownerRef:'Same reference material as trainer session',
+     daily:['One yield-to-a-stop rep at the start of every ride','Note any resistance to the hindquarter yield under saddle'],
+     milestone:'Horse yields hindquarters from the saddle and stops softly off seat + yield with minimal rein',
+     refs:[
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Compare your mounted yield to the ground version from Stage 1 — it should feel identical to the horse.'},
+       {icon:'📋',title:'4 Horsemanship Stage 3',src:'Program Reference Guide',tip:'If the mounted yield isn\'t working, go back to the ground version for a refresher before continuing.'},
+     ]},
+    {week:3,theme:'Riding Integration — Bending & Rhythm',
+     focus:['Bending at the Walk','Bending Transitions','Follow the Fence','Cruising Lessons'],
+     trainerTitle:'Bending, Transitions & Forward Confidence',trainerDur:'45–60 min (1–2x this week)',
+     trainerSub:'Build suppleness through bend and confidence moving forward',
+     trainerEx:[
+       'Follow the fence at a walk: establish straightness and rhythm along the rail',
+       'Bending at the walk: ride circles asking the horse to bend around your inside leg and rein',
+       'Bending transitions: walk-trot-walk while maintaining bend through corners',
+       'Cruising lesson: open space forward movement at working trot/lope, minimal steering, rider relaxed',
+       'Cool down with 5 minutes of loose-rein straight-line walking',
+     ],
+     trainerRef:'4 Horsemanship Program Reference Guide — "Bending" & "Cruising Lessons" (4H Groundwork Series, ridden application)',
+     ownerTitle:'Reinforce Bending & Forward Movement',ownerDur:'30–45 min (3x+ this week)',
+     ownerSub:'Forward and relaxed is the goal — don\'t over-steer',
+     ownerEx:[
+       'Follow the fence: 2 laps each direction at walk',
+       'Bending at the walk: 3 circles each direction',
+       'Bending transitions: 3 walk-trot-walk sequences maintaining bend',
+       'Cruising lesson: 2–3 minutes of forward trot in open space, light contact',
+       'Log which direction bends easier and note any rushing during cruising',
+     ],
+     ownerRef:'Same reference material as trainer session',
+     daily:['One follow-the-fence lap to start every ride','One bending circle each direction as part of warm-up'],
+     milestone:'Horse bends through both directions at the walk and moves forward confidently at trot in open space',
+     refs:[
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Review "Cruising Lessons" — confidence moving forward is just as important as control.'},
+       {icon:'📋',title:'4 Horsemanship Stage 3',src:'Program Reference Guide',tip:'A horse that won\'t bend one direction usually needs more forequarter/hindquarter yield work on the ground.'},
+     ]},
+    {week:4,theme:'Riding Integration — Obstacles & Full Program Review',
+     focus:['Touch and Rub Exercise','Diagnosis','Full 4-Week Review'],
+     trainerTitle:'Obstacle Confidence & Program Review',trainerDur:'45–60 min (1–2x this week)',
+     trainerSub:'Finish the Stage 3 exercise list, diagnose remaining stiffness, and review the full 4 weeks',
+     trainerEx:[
+       'Touch and rub exercise: ride up to an object (barrel, mailbox, tarp) and touch/rub it from the saddle',
+       'Diagnosis: evaluate the horse\'s movement at each gait to identify remaining stiffness or resistance',
+       'Assign 1–2 targeted flexion or yield exercises to address whatever the diagnosis reveals',
+       'Full review ride: flex, one rein stop, yield to a stop, bend, follow the fence, cruise — all in one session',
+       'Re-rate the horse across all three stages and set the next 4-week focus with the owner',
+     ],
+     trainerRef:'4 Horsemanship Program Reference Guide — "Touch and Rub" (4H Groundwork Series) + full program review',
+     ownerTitle:'Obstacle Practice & Review',ownerDur:'30–45 min (3x+ this week)',
+     ownerSub:'This is graduation week — ride with everything you\'ve built over the last 4 weeks',
+     ownerEx:[
+       'Touch and rub: approach and touch 2–3 objects from the saddle, reward calmness',
+       'Run the full review sequence once per session: flex → one rein stop → yield to a stop → bend → follow fence',
+       'Note anything that felt inconsistent for the trainer\'s final visit',
+       'Submit final ratings across Stage 1, 2, and 3 exercises before the program wraps',
+     ],
+     ownerRef:'Same reference material as trainer session',
+     daily:['One touch-and-rub obstacle approach per ride if available','Full review sequence at least once this week'],
+     milestone:'Horse and rider complete the full review sequence smoothly, confirming readiness for the next 4-week cycle',
+     refs:[
+       {icon:'🎓',title:'4H Groundwork Series',src:'Program Reference Guide',tip:'Whatever the "Diagnosis" step reveals, that becomes next cycle\'s priority — don\'t skip logging it.'},
+       {icon:'📋',title:'4 Horsemanship Program',src:'Program Reference Guide',tip:'Celebrate the graduation — then set the next 4-week goal with the trainer before starting over.'},
+     ]},
+  ],
+};
+
+// ─── GENERATE PLAN ──────────────────────────────────────────────────────────
+function generatePlan(){
+  if(!selectedGoal){alert('Please select a primary training goal.');return;}
+  const name=document.getElementById('s_name').value||'Student';
+  const horseName=document.getElementById('s_horse').value||'the horse';
+  const exp=selectedExp||'beginner';
+  const level=exp==='returning'?'beginner':exp;
+  const rd=parseInt(document.getElementById('s_ride').value)||3;
+  const gd=parseInt(document.getElementById('s_work').value)||1;
+  const len=document.getElementById('s_len').value;
+  const trd=parseInt(document.getElementById('s_trainer').value)||1;
+  const ownd=parseInt(document.getElementById('s_owner').value)||3;
+  const weeks=PLAN[level]||PLAN.beginner;
+  const hStage=currentHorseStage||'stage1';
+  const hWeeks=HORSE_PLAN[hStage]||HORSE_PLAN.stage1;
+  const stageLabels={stage1:'Stage 1 — Foundation',stage2:'Stage 2 — Development',stage3:'Stage 3 — Riding Integration'};
+
+  // Find weak skills
+  const weak=ALL_SKILLS.map(s=>({...s,sc:skillScores[s.id]||0})).filter(s=>s.sc>0).sort((a,b)=>a.sc-b.sc);
+  const weakNames=weak.slice(0,3).map(s=>s.name);
+
+  // Header (mode-aware)
+  const modeTitle=assessMode==='riding'?'Riding Lesson Game Plan':assessMode==='horse'?'Horse Training Game Plan':'Program Game Plan';
+  const showHorseName=assessMode!=='riding'||document.getElementById('s_horse').value.trim();
+  const metaBits=[];
+  if(assessMode!=='horse') metaBits.push(`Rider Level: <strong style="color:var(--am)">${exp.charAt(0).toUpperCase()+exp.slice(1)}</strong>`);
+  if(assessMode!=='riding') metaBits.push(`Horse Stage: <strong style="color:var(--am)">${stageLabels[hStage]}</strong>`);
+  metaBits.push(`Goal: <strong style="color:var(--am)">${goalLabel(selectedGoal)}</strong>`);
+  const ratio=[];
+  if(assessMode!=='horse'){
+    ratio.push(`<div class="pr-item"><div class="pr-pct ride">${rd}</div><div class="pr-lbl">Rider Sessions/Wk</div></div>`);
+    ratio.push(`<div class="pr-item"><div class="pr-pct grnd">${gd}</div><div class="pr-lbl">Rider Groundwork/Wk</div></div>`);
+  }
+  if(assessMode!=='riding'){
+    ratio.push(`<div class="pr-item"><div class="pr-pct" style="color:#7aaac8">${trd}</div><div class="pr-lbl">Trainer Sessions/Wk</div></div>`);
+    ratio.push(`<div class="pr-item"><div class="pr-pct" style="color:#7ab8c0">${ownd}</div><div class="pr-lbl">Owner Sessions/Wk</div></div>`);
+  }
+  if(assessMode!=='horse') ratio.push(`<div class="pr-item"><div class="pr-pct" style="color:var(--tx);font-size:1.1rem">${len}m</div><div class="pr-lbl">Rider Session Len</div></div>`);
+  document.getElementById('plan-header-area').innerHTML=`
+    <div class="plan-header">
+      <div class="plan-name">🐴 ${name}${showHorseName?` & ${horseName}`:''} — 4 Horsemanship ${modeTitle}</div>
+      <div class="plan-meta">${metaBits.join(' · ')}</div>
+      ${assessMode!=='horse'&&weakNames.length?`<div style="margin-top:8px;font-size:.75rem;color:var(--mu)">Rider priority focus areas: <span style="color:#e07777">${weakNames.join(' · ')}</span></div>`:''}
+      <div class="plan-ratio">${ratio.join('<div class="pr-divider"></div>')}</div>
+    </div>`;
+
+  // Build week content
+  let html='';
+  weeks.forEach((wk,wi)=>{
+    const hwk=hWeeks[wi]||hWeeks[hWeeks.length-1];
+    html+=`<div class="week-panel ${wi===0?'active':''}" id="wkp${wi+1}">`;
+    if(assessMode!=='horse'){
+    html+=`<div class="wk-theme-bar">
+      <div class="wk-num-small">Week ${wi+1} of 4 — Rider Focus</div>
+      <div class="wk-theme-title">${wk.theme}</div>
+      <div class="wk-focus">
+        ${wk.focus.map(f=>`<span class="wk-focus-tag${weakNames.includes(f)?' weak':''}">${weakNames.includes(f)?'🎯 ':''} ${f}</span>`).join('')}
+      </div>
+    </div>`;
+
+    html+=`<div class="session-grid">`;
+    // Groundwork card
+    html+=`<div class="session-card gw">
+      <div class="sess-hdr"><span class="sess-icon">🌿</span><div>
+        <div class="sess-title">${wk.gwTitle}</div>
+        <div class="sess-dur">${wk.gwDur}</div>
+      </div></div>
+      <div class="sess-sub">${wk.gwSub}</div>
+      <ul class="check-list">
+        ${wk.gwEx.map((e,ei)=>`<li id="ck${wi}g${ei}" onclick="toggleCheck(this)">
+          <div class="chk"></div><span>${e}</span>
+        </li>`).join('')}
+      </ul>
+      <div class="sess-ref"><strong>Ref:</strong> ${wk.gwRef}</div>
+    </div>`;
+
+    // Riding sessions
+    const rideSessions=wk.rides.slice(0,Math.min(rd,3));
+    rideSessions.forEach((rs,ri)=>{
+      html+=`<div class="session-card ride">
+        <div class="sess-hdr"><span class="sess-icon">🏇</span><div>
+          <div class="sess-title">Riding Session ${ri+1}: ${rs.title}</div>
+          <div class="sess-dur">${rs.dur}</div>
+        </div></div>
+        <div class="sess-sub">${rs.sub}</div>
+        <ul class="check-list">
+          ${rs.ex.map((e,ei)=>`<li id="ck${wi}r${ri}${ei}" onclick="toggleCheck(this)">
+            <div class="chk"></div><span>${e}</span>
+          </li>`).join('')}
+        </ul>
+        <div class="sess-ref"><strong>Ref:</strong> ${rs.ref}</div>
+      </div>`;
+    });
+    html+=`</div>`; // end session-grid
+
+    // Milestone (rider)
+    html+=`<div class="milestone-card">
+      <span class="ms-icon">🎯</span>
+      <div><div class="ms-label">Week ${wi+1} Rider Milestone</div>
+      <div class="ms-text">${wk.milestone}</div></div>
+    </div>`;
+    } // end rider section
+
+    // ── HORSE TRAINING SECTION ──
+    if(assessMode!=='riding'){
+    html+=`<div class="wk-theme-bar" style="border-left-color:#5a6a9a;background:linear-gradient(90deg,#1a1e30,var(--card2));margin-top:8px">
+      <div class="wk-num-small">Week ${wi+1} of 4 — Horse Training (4 Horsemanship ${stageLabels[hStage]})</div>
+      <div class="wk-theme-title">${hwk.theme}</div>
+      <div class="wk-focus">
+        ${hwk.focus.map(f=>`<span class="wk-focus-tag">${f}</span>`).join('')}
+      </div>
+    </div>`;
+
+    html+=`<div class="session-grid">`;
+    html+=`<div class="session-card htrainer">
+      <div class="sess-hdr"><span class="sess-icon">🎓</span><div>
+        <div class="sess-title">Trainer: ${hwk.trainerTitle}</div>
+        <div class="sess-dur">${hwk.trainerDur}</div>
+      </div></div>
+      <div class="sess-sub">${hwk.trainerSub}</div>
+      <ul class="check-list">
+        ${hwk.trainerEx.map((e,ei)=>`<li id="ckh${wi}t${ei}" onclick="toggleCheck(this)">
+          <div class="chk"></div><span>${e}</span>
+        </li>`).join('')}
+      </ul>
+      <div class="sess-ref"><strong>Ref:</strong> ${hwk.trainerRef}</div>
+    </div>`;
+    html+=`<div class="session-card howner">
+      <div class="sess-hdr"><span class="sess-icon">🧑‍🌾</span><div>
+        <div class="sess-title">Owner: ${hwk.ownerTitle}</div>
+        <div class="sess-dur">${hwk.ownerDur}</div>
+      </div></div>
+      <div class="sess-sub">${hwk.ownerSub}</div>
+      <ul class="check-list">
+        ${hwk.ownerEx.map((e,ei)=>`<li id="ckh${wi}o${ei}" onclick="toggleCheck(this)">
+          <div class="chk"></div><span>${e}</span>
+        </li>`).join('')}
+      </ul>
+      <div class="sess-ref"><strong>Ref:</strong> ${hwk.ownerRef}</div>
+    </div>`;
+    html+=`</div>`; // end session-grid
+
+    // Daily checklist card
+    html+=`<div class="daily-card">
+      <div class="sess-hdr"><span class="sess-icon">📅</span><div class="sess-title">Owner Daily Checklist (every day, not just formal sessions)</div></div>
+      <ul class="check-list">
+        ${hwk.daily.map((e,ei)=>`<li id="ckh${wi}d${ei}" onclick="toggleCheck(this)">
+          <div class="chk"></div><span>${e}</span>
+        </li>`).join('')}
+      </ul>
+    </div>`;
+
+    // Milestone (horse)
+    html+=`<div class="milestone-card">
+      <span class="ms-icon">🐴</span>
+      <div><div class="ms-label">Week ${wi+1} Horse Milestone</div>
+      <div class="ms-text">${hwk.milestone}</div></div>
+    </div>`;
+    } // end horse section
+
+    // Resources (rider + horse combined, mode-aware)
+    html+=`<div class="res-section">
+      <div class="sec-label" style="margin-top:0">References for Week ${wi+1}</div>
+      <div class="res-grid">
+        ${(assessMode!=='horse'?wk.refs:[]).concat(assessMode!=='riding'?hwk.refs:[]).map(r=>`<div class="res-card">
+          <span class="res-icon">${r.icon}</span>
+          <div class="res-title">${r.title}</div>
+          <div class="res-source">${r.src}</div>
+          <div class="res-tip">${r.tip}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+
+    html+=`</div>`; // end week-panel
+  });
+
+  document.getElementById('plan-content').innerHTML=html;
+  goStep(5);
+}
+
+function goalLabel(g){
+  const m={safety:'Safety & Confidence',partnership:'Partnership & Connection',technical:'Technical Skills',trail:'Trail Riding',competition:'Competition / Show',rescue:'Rescue / Rehab'};
+  return m[g]||g;
+}
+
+function showWeek(n,btn){
+  document.querySelectorAll('.week-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.wtab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('wkp'+n).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleCheck(li){
+  li.classList.toggle('done');
+  li.querySelector('.chk').classList.toggle('checked');
+}
+
+function startNew(){
+  if(!confirm('Start a new assessment? Current plan will be cleared.')) return;
+  skillScores={};horseScores={};currentHorseStage='stage1';selectedExp='';selectedGoal='';selectedHorse='';
+  document.querySelectorAll('input,textarea').forEach(e=>{if(e.type!=='submit')e.value=''});
+  document.querySelectorAll('select').forEach(e=>{
+    if(e.id==='s_ride') e.value='3';
+    else if(e.id==='s_len') e.value='60';
+    else if(e.id==='s_work') e.value='1';
+    else if(e.id==='s_lesson') e.value='1';
+    else if(e.id==='s_trainer') e.value='1';
+    else if(e.id==='s_owner') e.value='3';
+    else e.selectedIndex=0;
+  });
+  document.querySelectorAll('.cs-opt,.goal-card,.len-opt').forEach(e=>e.classList.remove('sel'));
+  document.getElementById('horse-stage2-wrap').style.display='none';
+  document.getElementById('horse-stage-result').innerHTML='';
+  document.getElementById('plan-content').innerHTML='';
+  renderSkills();
+  renderHorseSkills();
+  document.querySelectorAll('#mode_sel .cs-opt').forEach((e,i)=>e.classList.toggle('sel',i===2));
+  setMode('both');
+  goStep(1);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────
+renderSkills();
+renderHorseSkills();
+setMode('both');
+</script>
+</body>
+</html>
