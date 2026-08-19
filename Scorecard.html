@@ -62,6 +62,22 @@ label{font-size:.72rem;color:var(--mu);display:block;margin:12px 0 5px}
 .footer-note{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--bd);text-align:center;font-size:.64rem;color:var(--mu);padding:8px 12px}
 .hdr-actions{display:flex;gap:8px}
 .sec-label{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--am);font-weight:700;margin:20px 0 10px}
+.nt-btn{background:none;border:none;color:var(--mu);font-size:.72rem;cursor:pointer;padding:8px 0 0;text-align:left;display:block}
+.nt-btn.has{color:var(--am2)}
+.nt-box{display:none;margin-top:8px}
+.nt-box.show{display:block}
+.nt-box textarea{font-size:.82rem;padding:9px}
+.nt-show{font-size:.76rem;color:var(--tx);background:var(--card2);border-left:2px solid var(--am);border-radius:0 7px 7px 0;padding:8px 10px;margin-top:8px;line-height:1.45;white-space:pre-wrap}
+.pick{max-height:230px;overflow-y:auto;border:1px solid var(--bd);border-radius:10px;padding:4px 0;background:var(--card2);margin-top:4px}
+.pick-blk{font-size:.64rem;letter-spacing:.07em;text-transform:uppercase;color:var(--am);font-weight:700;padding:9px 12px 5px}
+.pick-row{display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer}
+.pick-row:active{background:var(--bd)}
+.pick-box{width:19px;height:19px;flex:0 0 19px;border:1.5px solid var(--bd);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.72rem;color:#14100b}
+.pick-row.on .pick-box{background:var(--am);border-color:var(--am)}
+.pick-name{font-size:.8rem;flex:1}
+.pick-sc{font-size:.68rem;color:var(--mu)}
+.worked{margin-top:6px}
+.worked-tag{display:inline-block;font-size:.68rem;background:var(--card2);border:1px solid var(--bd);color:var(--am2);border-radius:20px;padding:3px 9px;margin:3px 4px 0 0}
 </style>
 </head>
 <body>
@@ -119,8 +135,10 @@ label{font-size:.72rem;color:var(--mu);display:block;margin:12px 0 5px}
   <div class="modal">
     <h3>Log Training Session</h3>
     <p style="font-size:.75rem;color:var(--mu)">Saves today's date with a snapshot of current block totals.</p>
+    <label>What did you work on today? (tap any — across any blocks)</label>
+    <div class="pick" id="sess-pick"></div>
     <label>Session note (optional)</label>
-    <textarea id="sess-note" rows="3" placeholder="What you worked on, what improved…"></textarea>
+    <textarea id="sess-note" rows="3" placeholder="How it went, what improved, what to try next…"></textarea>
     <div class="row2">
       <button class="btn btn-ghost" onclick="closeModal('m-sess')">Cancel</button>
       <button class="btn btn-am" onclick="saveSession()">Save Session</button>
@@ -196,7 +214,8 @@ let DB={horses:[],gate:12};
 let curId=null;
 function load(){try{const raw=localStorage.getItem(KEY);if(raw)DB=Object.assign({horses:[],gate:12},JSON.parse(raw));}catch(e){}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){alert('Could not save — storage may be unavailable in this browser mode.');}}
-function horse(){return DB.horses.find(h=>h.id===curId);}
+function horse(){const h=DB.horses.find(x=>x.id===curId);if(h&&!h.skillNotes)h.skillNotes={};return h;}
+function noteOf(h,id){return (h.skillNotes&&h.skillNotes[id])||'';}
 
 // ─── PURE GATE LOGIC ───
 function blockTotal(scores,bi){return BLOCKS[bi].skills.reduce((t,sk)=>t+(scores[sk.id]||0),0);}
@@ -257,6 +276,15 @@ function renderCard(){
               <button ${unlocked?'':'disabled'} class="${h.scores[sk.id]===v?'sel':''}"
                 onclick="setScore('${sk.id}',${v})" title="${RATE_LABELS[v]}">${v}</button>`).join('')}
             </div>
+            ${noteOf(h,sk.id)?`<div class="nt-show" id="ntshow${sk.id}">${esc(noteOf(h,sk.id))}</div>`:''}
+            ${unlocked?`<button class="nt-btn ${noteOf(h,sk.id)?'has':''}" id="ntbtn${sk.id}" onclick="toggleNote('${sk.id}')">${noteOf(h,sk.id)?'\u270E Edit note':'\uFF0B Add note'}</button>
+            <div class="nt-box" id="ntbox${sk.id}">
+              <textarea id="ntta${sk.id}" rows="2" placeholder="What you saw, what to work on next\u2026">${esc(noteOf(h,sk.id))}</textarea>
+              <div class="row2" style="margin-top:8px">
+                <button class="btn btn-ghost btn-sm" onclick="cancelNote('${sk.id}')">Cancel</button>
+                <button class="btn btn-am btn-sm" onclick="saveNote('${sk.id}')">Save note</button>
+              </div>
+            </div>`:''}
           </div>`).join('')}
       </div>
       <div class="gate-note">${unlocked
@@ -278,6 +306,29 @@ function setScore(skId,v){
   openIds.forEach(id=>{const el=document.getElementById(id);if(el&&!el.classList.contains('locked'))el.classList.add('open');});
 }
 
+// ─── SKILL NOTES ───
+function toggleNote(id){
+  const box=document.getElementById('ntbox'+id);
+  if(!box)return;
+  box.classList.toggle('show');
+  if(box.classList.contains('show'))document.getElementById('ntta'+id).focus();
+}
+function saveNote(id){
+  const h=horse();
+  const val=document.getElementById('ntta'+id).value.trim();
+  if(!h.skillNotes)h.skillNotes={};
+  if(val)h.skillNotes[id]=val;else delete h.skillNotes[id];
+  save();
+  const openIds=[...document.querySelectorAll('.block.open')].map(e=>e.id);
+  renderCard();
+  openIds.forEach(bid=>{const el=document.getElementById(bid);if(el&&!el.classList.contains('locked'))el.classList.add('open');});
+}
+function cancelNote(id){
+  const h=horse();
+  document.getElementById('ntta'+id).value=noteOf(h,id);
+  document.getElementById('ntbox'+id).classList.remove('show');
+}
+
 // ─── SESSIONS ───
 function renderSessions(){
   const h=horse();
@@ -288,15 +339,36 @@ function renderSessions(){
     return `<div class="sess"><button class="s-del" onclick="delSession(${i})">remove</button>
       <button class="s-del" style="color:var(--am2)" onclick="shareSession(${i})">share</button>
       <div class="s-date">${s.date}</div>
-      ${s.note?`<div class="s-note">${esc(s.note)}</div>`:''}
+      ${(s.worked&&s.worked.length)?`<div class="worked">${s.worked.map(id=>`<span class="worked-tag">B${blockNumOf(id)} · ${esc(skillName(id))}</span>`).join('')}</div>`:''}
+      ${s.note?`<div class="s-note" style="margin-top:8px">${esc(s.note)}</div>`:''}
       <div class="s-meta">${s.snapshot}</div></div>`;
   }).join('');
 }
-function openSession(){document.getElementById('sess-note').value='';document.getElementById('m-sess').classList.add('show');}
+let sessPick=[];
+function openSession(){
+  const h=horse();
+  sessPick=[];
+  document.getElementById('sess-note').value='';
+  document.getElementById('sess-pick').innerHTML=BLOCKS.map((b,bi)=>
+    `<div class="pick-blk">${b.title}</div>`+b.skills.map(sk=>
+      `<div class="pick-row" id="pk${sk.id}" onclick="togglePick('${sk.id}')">
+        <div class="pick-box">✓</div>
+        <div class="pick-name">${sk.name}</div>
+        <div class="pick-sc">${h.scores[sk.id]?h.scores[sk.id]+'/4':'–'}</div>
+      </div>`).join('')).join('');
+  document.getElementById('m-sess').classList.add('show');
+}
+function togglePick(id){
+  const i=sessPick.indexOf(id);
+  if(i<0)sessPick.push(id);else sessPick.splice(i,1);
+  document.getElementById('pk'+id).classList.toggle('on',sessPick.indexOf(id)>=0);
+}
+function skillName(id){for(const b of BLOCKS){const sk=b.skills.find(x=>x.id===id);if(sk)return sk.name;}return id;}
+function blockNumOf(id){for(let i=0;i<BLOCKS.length;i++){if(BLOCKS[i].skills.some(x=>x.id===id))return i+1;}return '';}
 function saveSession(){
   const h=horse();
   const snap=BLOCKS.map((b,i)=>`B${i+1}: ${blockTotal(h.scores,i)}/16`).join(' · ');
-  h.sessions.push({date:new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}),note:document.getElementById('sess-note').value.trim(),snapshot:snap});
+  h.sessions.push({date:new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}),note:document.getElementById('sess-note').value.trim(),snapshot:snap,worked:sessPick.slice()});
   save();closeModal('m-sess');renderSessions();
 }
 function delSession(i){const h=horse();h.sessions.splice(i,1);save();renderSessions();}
@@ -306,7 +378,7 @@ function openAddHorse(){document.getElementById('add-name').value='';document.ge
 function addHorse(){
   const name=document.getElementById('add-name').value.trim();
   if(!name){alert('Please enter a horse name.');return;}
-  DB.horses.push({id:'h'+Date.now(),name,notes:document.getElementById('add-notes').value.trim(),scores:{},sessions:[]});
+  DB.horses.push({id:'h'+Date.now(),name,notes:document.getElementById('add-notes').value.trim(),scores:{},sessions:[],skillNotes:{}});
   save();closeModal('m-add');renderHome();
 }
 function deleteHorse(){
@@ -350,6 +422,14 @@ function buildProgressText(){
   });
   lines.push('');
   lines.push(done?'\u{1F3C6} Program complete \u2014 all 7 blocks passed!':`Currently working: ${BLOCKS[cb].title} (${BLOCKS[cb].stage})`);
+  if(!done){
+    const cn=BLOCKS[cb].skills.filter(sk=>noteOf(h,sk.id));
+    if(cn.length){
+      lines.push('');
+      lines.push('Notes on current block:');
+      cn.forEach(sk=>lines.push(`\u2022 ${sk.name}${h.scores[sk.id]?' ('+h.scores[sk.id]+'/4)':''}: ${noteOf(h,sk.id)}`));
+    }
+  }
   const totalPts=BLOCKS.reduce((t,_,i)=>t+blockTotal(h.scores,i),0);
   lines.push(`Overall: ${totalPts}/${BLOCKS.length*16} points \u00b7 gate: ${DB.gate}+/16 per block to advance`);
   return lines.join('\n');
@@ -357,9 +437,23 @@ function buildProgressText(){
 function buildSessionText(i){
   const h=horse();const s=h.sessions[i];
   const lines=[`\u{1F434} ${h.name} \u2014 Training Session`,`4 Horsemanship \u00b7 ${s.date}`,''];
+  if(s.worked&&s.worked.length){
+    lines.push('Worked on today:');
+    s.worked.forEach(id=>lines.push(`\u2022 ${skillName(id)}${h.scores[id]?' ('+h.scores[id]+'/4)':''}`));
+    lines.push('');
+  }
   if(s.note)lines.push(s.note,'');
   lines.push('Block scores: '+s.snapshot);
-  const cb=currentBlock(h.scores,DB.gate);
+  const cbn=currentBlock(h.scores,DB.gate);
+  if(cbn<BLOCKS.length){
+    const cn=BLOCKS[cbn].skills.filter(sk=>noteOf(h,sk.id));
+    if(cn.length){
+      lines.push('');
+      lines.push('Current focus notes:');
+      cn.forEach(sk=>lines.push(`\u2022 ${sk.name}: ${noteOf(h,sk.id)}`));
+    }
+  }
+  const cb=cbn;
   lines.push(cb>=BLOCKS.length?'\u{1F3C6} Program complete!':`Next up: ${BLOCKS[cb].title}`);
   return lines.join('\n');
 }
