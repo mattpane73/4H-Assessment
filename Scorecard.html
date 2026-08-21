@@ -41,10 +41,21 @@ header p{font-size:.72rem;color:var(--mu);margin-top:4px}
 .skill:last-child{border-bottom:none}
 .sk-name{font-size:.9rem;font-weight:600}
 .sk-desc{font-size:.74rem;color:var(--mu);margin:4px 0 10px;line-height:1.45}
-.rate{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.rate button{padding:11px 0;border-radius:9px;border:1px solid var(--bd);background:var(--card2);color:var(--mu);font-size:.95rem;font-weight:700;cursor:pointer}
-.rate button.sel{background:var(--am);color:#14100b;border-color:var(--am)}
-.rate button:disabled{cursor:not-allowed}
+.rate{margin-top:4px}
+.rate-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.rate-val{font-size:1.05rem;font-weight:700;color:var(--am2)}
+.rate-val.none{color:var(--mu);font-size:.85rem;font-weight:600}
+.rate-band{font-size:.7rem;color:var(--mu)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:34px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:5px;background:var(--card2);border:1px solid var(--bd)}
+input[type=range]::-moz-range-track{height:8px;border-radius:5px;background:var(--card2);border:1px solid var(--bd)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:50%;background:var(--am);border:3px solid var(--bg);margin-top:-11px;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--am);border:3px solid var(--bg);box-shadow:0 1px 4px rgba(0,0,0,.5)}
+input[type=range].unset::-webkit-slider-thumb{background:var(--lock)}
+input[type=range].unset::-moz-range-thumb{background:var(--lock)}
+input[type=range]:disabled{opacity:.4;cursor:not-allowed}
+.rate-ticks{display:flex;justify-content:space-between;font-size:.64rem;color:var(--mu);padding:0 2px;margin-top:-4px}
+.rate-clear{background:none;border:none;color:var(--mu);font-size:.7rem;cursor:pointer;padding:4px 0 0}
 .gate-note{font-size:.7rem;color:var(--mu);padding:10px 16px 12px;border-top:1px dashed var(--bd)}
 .lock-tag{font-size:.68rem;color:var(--lock);font-weight:700}
 .sess{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin-bottom:10px}
@@ -151,7 +162,7 @@ label{font-size:.72rem;color:var(--mu);display:block;margin:12px 0 5px}
   <div class="modal">
     <h3>Settings</h3>
     <label>Points required to unlock the next block (out of 16)</label>
-    <input type="number" id="set-gate" min="4" max="16">
+    <input type="number" id="set-gate" min="4" max="16" step="0.25">
     <p style="font-size:.7rem;color:var(--mu);margin-top:6px">Default 12 = an average of 3 (Intermediate) across the block's 4 skills. All 4 skills must also be scored.</p>
     <div class="sec-label">Backup</div>
     <div class="row2" style="margin-top:0">
@@ -206,7 +217,9 @@ const BLOCKS=[
   {id:"dw",name:"Draw to a Stop",desc:"Draw the horse's nose down and back into a soft stop from light rein pressure — reward the give instantly."},
   {id:"yb",name:"Yield the Hindquarters and Back Up",desc:"Combine a hindquarter yield with an immediate straight backup under saddle — respect and control of the hind end."}]}
 ];
-const RATE_LABELS={1:"1 · Beginner",2:"2 · Adv. Beginner",3:"3 · Intermediate",4:"4 · Proficient"};
+const BANDS=[[1,"Beginner"],[2,"Adv. Beginner"],[3,"Intermediate"],[4,"Proficient"]];
+function bandOf(v){let l="Beginner";BANDS.forEach(([n,t])=>{if(v>=n)l=t;});return l;}
+function fmt(n){return Number(n.toFixed(2)).toString();}
 
 // ─── STATE / STORAGE ───
 const KEY='4h_scorecards_v1';
@@ -238,7 +251,7 @@ function renderHome(){
       <div class="hc-top"><span class="hc-name">🐴 ${esc(h.name)}</span>
       <span class="hc-block">${done?'✓ Program complete':'Working: '+BLOCKS[cb].title}</span></div>
       <div class="pbar"><div style="width:${pct}%"></div></div>
-      <div class="pct">${totalPts} / ${BLOCKS.length*16} points · ${scored} / 28 skills scored${h.notes?' · '+esc(h.notes):''}</div>
+      <div class="pct">${fmt(totalPts)} / ${BLOCKS.length*16} points · ${scored} / 28 skills scored${h.notes?' · '+esc(h.notes):''}</div>
     </div>`;
   }).join('');
 }
@@ -253,7 +266,7 @@ function renderCard(){
   document.getElementById('gate-desc').textContent=`Rate each skill 1–4. Score all 4 skills and reach ${DB.gate}+ of 16 points to unlock the next block.`;
   const cb=currentBlock(h.scores,DB.gate);
   const totalPts=BLOCKS.reduce((t,_,i)=>t+blockTotal(h.scores,i),0);
-  document.getElementById('card-progress').textContent=`${totalPts}/${BLOCKS.length*16} pts`;
+  document.getElementById('card-progress').textContent=`${fmt(totalPts)}/${BLOCKS.length*16} pts`;
   document.getElementById('blocks').innerHTML=BLOCKS.map((b,bi)=>{
     const unlocked=blockUnlocked(h.scores,bi,DB.gate);
     const passed=blockPassed(h.scores,bi,DB.gate);
@@ -261,7 +274,7 @@ function renderCard(){
     const scoredN=blockScoredCount(h.scores,bi);
     const open=bi===cb&&unlocked;
     const scoreCls=passed?'pass':(unlocked?'part':'lockc');
-    const scoreTxt=unlocked?`${tot}/16 ${passed?'✓ Passed':''}`:'🔒 Locked';
+    const scoreTxt=unlocked?`${fmt(tot)}/16 ${passed?'✓ Passed':''}`:'🔒 Locked';
     return `<div class="block ${unlocked?'':'locked'} ${open?'open':''}" id="blk${bi}">
       <div class="blk-head" onclick="toggleBlock(${bi})">
         <div><div class="blk-title">${b.title}</div><div class="blk-stage">${b.stage}</div></div>
@@ -272,9 +285,16 @@ function renderCard(){
           <div class="skill">
             <div class="sk-name">${sk.name}</div>
             <div class="sk-desc">${sk.desc}</div>
-            <div class="rate">${[1,2,3,4].map(v=>`
-              <button ${unlocked?'':'disabled'} class="${h.scores[sk.id]===v?'sel':''}"
-                onclick="setScore('${sk.id}',${v})" title="${RATE_LABELS[v]}">${v}</button>`).join('')}
+            <div class="rate">
+              <div class="rate-top">
+                <span class="rate-val ${h.scores[sk.id]?'':'none'}" id="rv${sk.id}">${h.scores[sk.id]?fmt(h.scores[sk.id])+' / 4':'Not scored'}</span>
+                <span class="rate-band" id="rb${sk.id}">${h.scores[sk.id]?bandOf(h.scores[sk.id]):'slide to rate'}</span>
+              </div>
+              <input type="range" min="1" max="4" step="0.25" id="rs${sk.id}"
+                class="${h.scores[sk.id]?'':'unset'}" value="${h.scores[sk.id]||1}" ${unlocked?'':'disabled'}
+                oninput="liveScore('${sk.id}',this.value)" onchange="setScore('${sk.id}',this.value)">
+              <div class="rate-ticks"><span>1</span><span>2</span><span>3</span><span>4</span></div>
+              ${(unlocked&&h.scores[sk.id])?`<button class="rate-clear" onclick="clearScore('${sk.id}')">\u21BA Clear score</button>`:''}
             </div>
             ${noteOf(h,sk.id)?`<div class="nt-show" id="ntshow${sk.id}">${esc(noteOf(h,sk.id))}</div>`:''}
             ${unlocked?`<button class="nt-btn ${noteOf(h,sk.id)?'has':''}" id="ntbtn${sk.id}" onclick="toggleNote('${sk.id}')">${noteOf(h,sk.id)?'\u270E Edit note':'\uFF0B Add note'}</button>
@@ -288,22 +308,40 @@ function renderCard(){
           </div>`).join('')}
       </div>
       <div class="gate-note">${unlocked
-        ?(passed?'Block passed — next block is unlocked.':`${scoredN}/4 skills scored · ${tot}/${DB.gate} points toward the gate.`)
+        ?(passed?'Block passed — next block is unlocked.':`${scoredN}/4 skills scored · ${fmt(tot)}/${DB.gate} points toward the gate.`)
         :`<span class="lock-tag">Locked</span> — pass ${BLOCKS[bi-1]?BLOCKS[bi-1].title:'the previous block'} first (all 4 skills scored, ${DB.gate}+ points).`}</div>
     </div>`;
   }).join('');
   renderSessions();
 }
 function toggleBlock(bi){const el=document.getElementById('blk'+bi);if(!el.classList.contains('locked'))el.classList.toggle('open');}
+// Live feedback while dragging \u2014 no save, no re-render (keeps the drag smooth)
+function liveScore(skId,v){
+  const val=parseFloat(v);
+  const rv=document.getElementById('rv'+skId), rb=document.getElementById('rb'+skId), rs=document.getElementById('rs'+skId);
+  if(rv){rv.textContent=fmt(val)+' / 4';rv.classList.remove('none');}
+  if(rb)rb.textContent=bandOf(val);
+  if(rs)rs.classList.remove('unset');
+}
+// Commit on release
 function setScore(skId,v){
   const h=horse();
-  h.scores[skId]=(h.scores[skId]===v)?undefined:v;
-  if(h.scores[skId]===undefined)delete h.scores[skId];
+  h.scores[skId]=parseFloat(v);
   save();
-  // preserve open blocks across rerender
+  rerenderKeepingOpen();
+}
+function clearScore(skId){
+  const h=horse();
+  delete h.scores[skId];
+  save();
+  rerenderKeepingOpen();
+}
+function rerenderKeepingOpen(){
   const openIds=[...document.querySelectorAll('.block.open')].map(e=>e.id);
+  const y=window.scrollY;
   renderCard();
   openIds.forEach(id=>{const el=document.getElementById(id);if(el&&!el.classList.contains('locked'))el.classList.add('open');});
+  window.scrollTo(0,y);
 }
 
 // ─── SKILL NOTES ───
@@ -354,7 +392,7 @@ function openSession(){
       `<div class="pick-row" id="pk${sk.id}" onclick="togglePick('${sk.id}')">
         <div class="pick-box">✓</div>
         <div class="pick-name">${sk.name}</div>
-        <div class="pick-sc">${h.scores[sk.id]?h.scores[sk.id]+'/4':'–'}</div>
+        <div class="pick-sc">${h.scores[sk.id]?fmt(h.scores[sk.id])+'/4':'–'}</div>
       </div>`).join('')).join('');
   document.getElementById('m-sess').classList.add('show');
 }
@@ -367,7 +405,7 @@ function skillName(id){for(const b of BLOCKS){const sk=b.skills.find(x=>x.id===i
 function blockNumOf(id){for(let i=0;i<BLOCKS.length;i++){if(BLOCKS[i].skills.some(x=>x.id===id))return i+1;}return '';}
 function saveSession(){
   const h=horse();
-  const snap=BLOCKS.map((b,i)=>`B${i+1}: ${blockTotal(h.scores,i)}/16`).join(' · ');
+  const snap=BLOCKS.map((b,i)=>`B${i+1}: ${fmt(blockTotal(h.scores,i))}/16`).join(' · ');
   h.sessions.push({date:new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}),note:document.getElementById('sess-note').value.trim(),snapshot:snap,worked:sessPick.slice()});
   save();closeModal('m-sess');renderSessions();
 }
@@ -391,7 +429,7 @@ function deleteHorse(){
 // ─── SETTINGS / BACKUP ───
 function openSettings(){document.getElementById('set-gate').value=DB.gate;document.getElementById('m-set').classList.add('show');}
 function saveSettings(){
-  const g=parseInt(document.getElementById('set-gate').value,10);
+  const g=parseFloat(document.getElementById('set-gate').value);
   if(g>=4&&g<=16){DB.gate=g;save();closeModal('m-set');renderHome();if(curId)renderCard();}
   else alert('Gate must be between 4 and 16.');
 }
@@ -418,7 +456,7 @@ function buildProgressText(){
     const unlocked=blockUnlocked(h.scores,i,DB.gate);
     const passed=blockPassed(h.scores,i,DB.gate);
     const tot=blockTotal(h.scores,i);
-    lines.push(`${passed?'\u2705':(unlocked?'\u25B6\uFE0F':'\u{1F512}')} ${b.title}: ${unlocked?tot+'/16':'locked'}${passed?' \u2014 passed':''}`);
+    lines.push(`${passed?'\u2705':(unlocked?'\u25B6\uFE0F':'\u{1F512}')} ${b.title}: ${unlocked?fmt(tot)+'/16':'locked'}${passed?' \u2014 passed':''}`);
   });
   lines.push('');
   lines.push(done?'\u{1F3C6} Program complete \u2014 all 7 blocks passed!':`Currently working: ${BLOCKS[cb].title} (${BLOCKS[cb].stage})`);
@@ -427,11 +465,11 @@ function buildProgressText(){
     if(cn.length){
       lines.push('');
       lines.push('Notes on current block:');
-      cn.forEach(sk=>lines.push(`\u2022 ${sk.name}${h.scores[sk.id]?' ('+h.scores[sk.id]+'/4)':''}: ${noteOf(h,sk.id)}`));
+      cn.forEach(sk=>lines.push(`\u2022 ${sk.name}${h.scores[sk.id]?' ('+fmt(h.scores[sk.id])+'/4)':''}: ${noteOf(h,sk.id)}`));
     }
   }
   const totalPts=BLOCKS.reduce((t,_,i)=>t+blockTotal(h.scores,i),0);
-  lines.push(`Overall: ${totalPts}/${BLOCKS.length*16} points \u00b7 gate: ${DB.gate}+/16 per block to advance`);
+  lines.push(`Overall: ${fmt(totalPts)}/${BLOCKS.length*16} points \u00b7 gate: ${DB.gate}+/16 per block to advance`);
   return lines.join('\n');
 }
 function buildSessionText(i){
@@ -439,7 +477,7 @@ function buildSessionText(i){
   const lines=[`\u{1F434} ${h.name} \u2014 Training Session`,`4 Horsemanship \u00b7 ${s.date}`,''];
   if(s.worked&&s.worked.length){
     lines.push('Worked on today:');
-    s.worked.forEach(id=>lines.push(`\u2022 ${skillName(id)}${h.scores[id]?' ('+h.scores[id]+'/4)':''}`));
+    s.worked.forEach(id=>lines.push(`\u2022 ${skillName(id)}${h.scores[id]?' ('+fmt(h.scores[id])+'/4)':''}`));
     lines.push('');
   }
   if(s.note)lines.push(s.note,'');
