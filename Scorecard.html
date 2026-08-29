@@ -56,6 +56,22 @@ input[type=range].unset::-moz-range-thumb{background:var(--lock)}
 input[type=range]:disabled{opacity:.4;cursor:not-allowed}
 .rate-ticks{display:flex;justify-content:space-between;font-size:.64rem;color:var(--mu);padding:0 2px;margin-top:-4px}
 .rate-clear{background:none;border:none;color:var(--mu);font-size:.7rem;cursor:pointer;padding:4px 0 0}
+.sk-head{display:flex;align-items:flex-start;gap:10px}
+.star{background:none;border:none;font-size:1.15rem;line-height:1;cursor:pointer;color:var(--lock);padding:0;flex:0 0 auto}
+.star.on{color:var(--am)}
+.focus-box{background:var(--card);border:1px solid var(--am);border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.focus-box h4{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--am);margin-bottom:8px}
+.focus-item{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;padding:6px 0;border-bottom:1px solid var(--card2)}
+.focus-item:last-child{border-bottom:none}
+.focus-item .fi-b{font-size:.66rem;color:var(--mu)}
+.focus-x{background:none;border:none;color:var(--mu);cursor:pointer;font-size:.9rem}
+.ctr{display:flex;align-items:center;gap:10px;margin-top:6px}
+.ctr button{width:44px;height:44px;border-radius:11px;border:1px solid var(--bd);background:var(--card2);color:var(--am);font-size:1.3rem;font-weight:700;cursor:pointer}
+.ctr input{width:70px;text-align:center;font-size:1.1rem;font-weight:700;padding:11px 4px}
+.ctr-lbl{font-size:.78rem;color:var(--tx);flex:1}
+.req{background:var(--card2);border:1px solid var(--am);border-radius:11px;padding:12px;margin-top:6px}
+.req-note{font-size:.68rem;color:var(--mu);margin-top:8px;line-height:1.4}
+.mini{font-size:.68rem;color:var(--mu);margin-top:3px}
 .gate-note{font-size:.7rem;color:var(--mu);padding:10px 16px 12px;border-top:1px dashed var(--bd)}
 .lock-tag{font-size:.68rem;color:var(--lock);font-weight:700}
 .sess{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin-bottom:10px}
@@ -113,13 +129,14 @@ label{font-size:.72rem;color:var(--mu);display:block;margin:12px 0 5px}
     <div class="topbar">
       <button class="btn btn-ghost btn-sm" onclick="goHome()">← Horses</button>
       <div class="hdr-actions">
-        <button class="btn btn-ghost btn-sm" onclick="shareProgress()">↗ Share</button>
+        <button class="btn btn-ghost btn-sm" onclick="openShareChoice()">↗ Share</button>
         <button class="btn btn-ghost btn-sm" onclick="openSession()">＋ Log Session</button>
         <button class="btn btn-ghost btn-sm" style="color:var(--warn)" onclick="deleteHorse()">Delete</button>
       </div>
     </div>
     <div class="topbar" style="margin-bottom:4px"><h2 id="card-name"></h2><span class="pct" id="card-progress"></span></div>
     <p class="pct" style="margin-bottom:14px" id="gate-desc"></p>
+    <div id="focus-box"></div>
     <div id="blocks"></div>
     <div class="sec-label">Session Log</div>
     <div id="sessions"></div>
@@ -146,7 +163,23 @@ label{font-size:.72rem;color:var(--mu);display:block;margin:12px 0 5px}
   <div class="modal">
     <h3>Log Training Session</h3>
     <p style="font-size:.75rem;color:var(--mu)">Saves today's date with a snapshot of current block totals.</p>
-    <label>What did you work on today? (tap any — across any blocks)</label>
+    <label>Required every session</label>
+    <div class="req">
+      <div class="ctr">
+        <span class="ctr-lbl">\u21A9 Backing up <span style="color:var(--mu);font-size:.7rem">(reps)</span></span>
+        <button onclick="bump('back',-1)">\u2212</button>
+        <input type="number" id="ctr-back" value="0" min="0" inputmode="numeric">
+        <button onclick="bump('back',1)">+</button>
+      </div>
+      <div class="ctr" style="margin-top:10px">
+        <span class="ctr-lbl">\u27F2 Flexing <span style="color:var(--mu);font-size:.7rem">(reps)</span></span>
+        <button onclick="bump('flex',-1)">\u2212</button>
+        <input type="number" id="ctr-flex" value="0" min="0" inputmode="numeric">
+        <button onclick="bump('flex',1)">+</button>
+      </div>
+      <div class="req-note">Every horse backs up and flexes every time it's worked \u2014 log the reps before saving.</div>
+    </div>
+    <label>What else did you work on today? (tap any — across any blocks)</label>
     <div class="pick" id="sess-pick"></div>
     <label>Session note (optional)</label>
     <textarea id="sess-note" rows="3" placeholder="How it went, what improved, what to try next…"></textarea>
@@ -154,6 +187,19 @@ label{font-size:.72rem;color:var(--mu);display:block;margin:12px 0 5px}
       <button class="btn btn-ghost" onclick="closeModal('m-sess')">Cancel</button>
       <button class="btn btn-am" onclick="saveSession()">Save Session</button>
     </div>
+  </div>
+</div>
+
+<!-- SHARE CHOICE MODAL -->
+<div class="modal-bg" id="m-share">
+  <div class="modal">
+    <h3>Share with owner</h3>
+    <p style="font-size:.75rem;color:var(--mu)">Choose what to send.</p>
+    <button class="btn btn-am btn-full" style="margin-top:14px" onclick="closeModal('m-share');shareLatestSession()">Today's session</button>
+    <div class="mini" style="text-align:center;margin-bottom:12px">Most recent logged session \u2014 what you worked on, reps, and notes</div>
+    <button class="btn btn-am btn-full" onclick="closeModal('m-share');shareProgress()">Overall scorecard</button>
+    <div class="mini" style="text-align:center;margin-bottom:12px">All blocks, scores, and current focus</div>
+    <button class="btn btn-ghost btn-full" onclick="closeModal('m-share')">Cancel</button>
   </div>
 </div>
 
@@ -229,6 +275,25 @@ function load(){try{const raw=localStorage.getItem(KEY);if(raw)DB=Object.assign(
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){alert('Could not save — storage may be unavailable in this browser mode.');}}
 function horse(){const h=DB.horses.find(x=>x.id===curId);if(h&&!h.skillNotes)h.skillNotes={};return h;}
 function noteOf(h,id){return (h.skillNotes&&h.skillNotes[id])||'';}
+function isFocus(h,id){return !!(h.focus&&h.focus.indexOf(id)>=0);}
+function toggleFocus(id){
+  const h=horse();
+  if(!h.focus)h.focus=[];
+  const i=h.focus.indexOf(id);
+  if(i<0)h.focus.push(id);else h.focus.splice(i,1);
+  save();rerenderKeepingOpen();
+}
+function renderFocus(){
+  const h=horse();
+  const box=document.getElementById('focus-box');
+  if(!h.focus||!h.focus.length){box.innerHTML='';return;}
+  box.innerHTML=`<div class="focus-box"><h4>\u2605 Working On</h4>
+    ${h.focus.map(id=>`<div class="focus-item">
+      <div><div>${esc(skillName(id))}</div><div class="fi-b">Block ${blockNumOf(id)}${h.scores[id]?' \u00b7 '+fmt(h.scores[id])+'/4':' \u00b7 not scored'}</div></div>
+      <button class="focus-x" onclick="toggleFocus('${id}')">\u2715</button>
+    </div>`).join('')}
+    <div class="mini">Star any exercise to add it here \u2014 including ones in completed blocks.</div></div>`;
+}
 
 // ─── PURE GATE LOGIC ───
 function blockTotal(scores,bi){return BLOCKS[bi].skills.reduce((t,sk)=>t+(scores[sk.id]||0),0);}
@@ -283,8 +348,11 @@ function renderCard(){
       <div class="blk-body">
         ${b.skills.map(sk=>`
           <div class="skill">
-            <div class="sk-name">${sk.name}</div>
-            <div class="sk-desc">${sk.desc}</div>
+            <div class="sk-head">
+              <button class="star ${isFocus(h,sk.id)?'on':''}" onclick="toggleFocus('${sk.id}')" title="Mark as an exercise to work on">${isFocus(h,sk.id)?'\u2605':'\u2606'}</button>
+              <div style="flex:1"><div class="sk-name">${sk.name}</div>
+              <div class="sk-desc">${sk.desc}</div></div>
+            </div>
             <div class="rate">
               <div class="rate-top">
                 <span class="rate-val ${h.scores[sk.id]?'':'none'}" id="rv${sk.id}">${h.scores[sk.id]?fmt(h.scores[sk.id])+' / 4':'Not scored'}</span>
@@ -312,6 +380,7 @@ function renderCard(){
         :`<span class="lock-tag">Locked</span> — pass ${BLOCKS[bi-1]?BLOCKS[bi-1].title:'the previous block'} first (all 4 skills scored, ${DB.gate}+ points).`}</div>
     </div>`;
   }).join('');
+  renderFocus();
   renderSessions();
 }
 function toggleBlock(bi){const el=document.getElementById('blk'+bi);if(!el.classList.contains('locked'))el.classList.toggle('open');}
@@ -379,6 +448,7 @@ function renderSessions(){
       <div class="s-date">${s.date}</div>
       ${(s.worked&&s.worked.length)?`<div class="worked">${s.worked.map(id=>`<span class="worked-tag">B${blockNumOf(id)} · ${esc(skillName(id))}</span>`).join('')}</div>`:''}
       ${s.note?`<div class="s-note" style="margin-top:8px">${esc(s.note)}</div>`:''}
+      <div class="s-meta">\u21A9 Backing ${s.back||0} \u00b7 \u27F2 Flexing ${s.flex||0}</div>
       <div class="s-meta">${s.snapshot}</div></div>`;
   }).join('');
 }
@@ -387,6 +457,8 @@ function openSession(){
   const h=horse();
   sessPick=[];
   document.getElementById('sess-note').value='';
+  document.getElementById('ctr-back').value=0;
+  document.getElementById('ctr-flex').value=0;
   document.getElementById('sess-pick').innerHTML=BLOCKS.map((b,bi)=>
     `<div class="pick-blk">${b.title}</div>`+b.skills.map(sk=>
       `<div class="pick-row" id="pk${sk.id}" onclick="togglePick('${sk.id}')">
@@ -395,6 +467,10 @@ function openSession(){
         <div class="pick-sc">${h.scores[sk.id]?fmt(h.scores[sk.id])+'/4':'–'}</div>
       </div>`).join('')).join('');
   document.getElementById('m-sess').classList.add('show');
+}
+function bump(which,d){
+  const el=document.getElementById(which==='back'?'ctr-back':'ctr-flex');
+  el.value=Math.max(0,(parseInt(el.value,10)||0)+d);
 }
 function togglePick(id){
   const i=sessPick.indexOf(id);
@@ -406,7 +482,13 @@ function blockNumOf(id){for(let i=0;i<BLOCKS.length;i++){if(BLOCKS[i].skills.som
 function saveSession(){
   const h=horse();
   const snap=BLOCKS.map((b,i)=>`B${i+1}: ${fmt(blockTotal(h.scores,i))}/16`).join(' · ');
-  h.sessions.push({date:new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}),note:document.getElementById('sess-note').value.trim(),snapshot:snap,worked:sessPick.slice()});
+  const back=parseInt(document.getElementById('ctr-back').value,10)||0;
+  const flex=parseInt(document.getElementById('ctr-flex').value,10)||0;
+  if(back===0||flex===0){
+    const missing=[back===0?'backing up':'',flex===0?'flexing':''].filter(Boolean).join(' or ');
+    if(!confirm(`No reps logged for ${missing}. Every horse should back up and flex every session \u2014 save anyway?`))return;
+  }
+  h.sessions.push({date:new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}),note:document.getElementById('sess-note').value.trim(),snapshot:snap,worked:sessPick.slice(),back:back,flex:flex});
   save();closeModal('m-sess');renderSessions();
 }
 function delSession(i){const h=horse();h.sessions.splice(i,1);save();renderSessions();}
@@ -416,7 +498,7 @@ function openAddHorse(){document.getElementById('add-name').value='';document.ge
 function addHorse(){
   const name=document.getElementById('add-name').value.trim();
   if(!name){alert('Please enter a horse name.');return;}
-  DB.horses.push({id:'h'+Date.now(),name,notes:document.getElementById('add-notes').value.trim(),scores:{},sessions:[],skillNotes:{}});
+  DB.horses.push({id:'h'+Date.now(),name,notes:document.getElementById('add-notes').value.trim(),scores:{},sessions:[],skillNotes:{},focus:[]});
   save();closeModal('m-add');renderHome();
 }
 function deleteHorse(){
@@ -470,6 +552,11 @@ function buildProgressText(){
   }
   const totalPts=BLOCKS.reduce((t,_,i)=>t+blockTotal(h.scores,i),0);
   lines.push(`Overall: ${fmt(totalPts)}/${BLOCKS.length*16} points \u00b7 gate: ${DB.gate}+/16 per block to advance`);
+  if(h.focus&&h.focus.length){
+    lines.push('');
+    lines.push('\u2605 Currently working on:');
+    h.focus.forEach(id=>lines.push(`\u2022 ${skillName(id)}${h.scores[id]?' ('+fmt(h.scores[id])+'/4)':''}`));
+  }
   return lines.join('\n');
 }
 function buildSessionText(i){
@@ -481,6 +568,8 @@ function buildSessionText(i){
     lines.push('');
   }
   if(s.note)lines.push(s.note,'');
+  lines.push(`\u21A9 Backing up: ${s.back||0} reps \u00b7 \u27F2 Flexing: ${s.flex||0} reps`);
+  lines.push('');
   lines.push('Block scores: '+s.snapshot);
   const cbn=currentBlock(h.scores,DB.gate);
   if(cbn<BLOCKS.length){
@@ -499,6 +588,12 @@ function doShare(text){
   if(navigator.share){navigator.share({text}).catch(()=>{});}
   else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>alert('Progress copied \u2014 paste it into a text or email to the owner.'));}
   else{prompt('Copy this summary:',text);}
+}
+function openShareChoice(){document.getElementById('m-share').classList.add('show');}
+function shareLatestSession(){
+  const h=horse();
+  if(!h.sessions.length){alert('No sessions logged yet \u2014 log today\'s session first.');return;}
+  doShare(buildSessionText(h.sessions.length-1));
 }
 function shareProgress(){doShare(buildProgressText());}
 function shareSession(i){doShare(buildSessionText(i));}
