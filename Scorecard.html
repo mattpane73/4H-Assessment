@@ -179,8 +179,10 @@ label{font-size:.72rem;color:var(--mu);display:block;margin:12px 0 5px}
       </div>
       <div class="req-note">Every horse backs up and flexes every time it's worked \u2014 log the reps before saving.</div>
     </div>
-    <label>What else did you work on today? (tap any — across any blocks)</label>
+    <label>Skills worked this session <span id="pick-count" style="color:var(--am2)"></span></label>
+    <p style="font-size:.7rem;color:var(--mu);margin:-2px 0 4px">Tap every exercise you worked \u2014 any block, locked or not. These are what the owner sees.</p>
     <div class="pick" id="sess-pick"></div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="pickFocusAll()">\u2605 Select my starred exercises</button>
     <label>Session note (optional)</label>
     <textarea id="sess-note" rows="3" placeholder="How it went, what improved, what to try next…"></textarea>
     <div class="row2">
@@ -455,7 +457,7 @@ function renderSessions(){
 let sessPick=[];
 function openSession(){
   const h=horse();
-  sessPick=[];
+  sessPick=(h.focus||[]).slice();
   document.getElementById('sess-note').value='';
   document.getElementById('ctr-back').value=0;
   document.getElementById('ctr-flex').value=0;
@@ -466,7 +468,20 @@ function openSession(){
         <div class="pick-name">${sk.name}</div>
         <div class="pick-sc">${h.scores[sk.id]?fmt(h.scores[sk.id])+'/4':'–'}</div>
       </div>`).join('')).join('');
+  sessPick.forEach(id=>{const el=document.getElementById('pk'+id);if(el)el.classList.add('on');});
+  updatePickCount();
   document.getElementById('m-sess').classList.add('show');
+}
+function updatePickCount(){
+  const el=document.getElementById('pick-count');
+  if(el)el.textContent=sessPick.length?`\u2014 ${sessPick.length} selected`:'';
+}
+function pickFocusAll(){
+  const h=horse();
+  (h.focus||[]).forEach(id=>{
+    if(sessPick.indexOf(id)<0){sessPick.push(id);const el=document.getElementById('pk'+id);if(el)el.classList.add('on');}
+  });
+  updatePickCount();
 }
 function bump(which,d){
   const el=document.getElementById(which==='back'?'ctr-back':'ctr-flex');
@@ -476,6 +491,7 @@ function togglePick(id){
   const i=sessPick.indexOf(id);
   if(i<0)sessPick.push(id);else sessPick.splice(i,1);
   document.getElementById('pk'+id).classList.toggle('on',sessPick.indexOf(id)>=0);
+  updatePickCount();
 }
 function skillName(id){for(const b of BLOCKS){const sk=b.skills.find(x=>x.id===id);if(sk)return sk.name;}return id;}
 function blockNumOf(id){for(let i=0;i<BLOCKS.length;i++){if(BLOCKS[i].skills.some(x=>x.id===id))return i+1;}return '';}
@@ -487,6 +503,9 @@ function saveSession(){
   if(back===0||flex===0){
     const missing=[back===0?'backing up':'',flex===0?'flexing':''].filter(Boolean).join(' or ');
     if(!confirm(`No reps logged for ${missing}. Every horse should back up and flex every session \u2014 save anyway?`))return;
+  }
+  if(!sessPick.length){
+    if(!confirm('No skills selected for this session. The owner\'s update won\'t show what you worked on \u2014 save anyway?'))return;
   }
   h.sessions.push({date:new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}),note:document.getElementById('sess-note').value.trim(),snapshot:snap,worked:sessPick.slice(),back:back,flex:flex});
   save();closeModal('m-sess');renderSessions();
@@ -563,24 +582,21 @@ function buildSessionText(i){
   const h=horse();const s=h.sessions[i];
   const lines=[`\u{1F434} ${h.name} \u2014 Training Session`,`4 Horsemanship \u00b7 ${s.date}`,''];
   if(s.worked&&s.worked.length){
-    lines.push('Worked on today:');
-    s.worked.forEach(id=>lines.push(`\u2022 ${skillName(id)}${h.scores[id]?' ('+fmt(h.scores[id])+'/4)':''}`));
+    lines.push(`Worked on today (${s.worked.length} ${s.worked.length===1?'exercise':'exercises'}):`);
+    s.worked.forEach(id=>{
+      const nt=noteOf(h,id);
+      lines.push(`\u2022 ${skillName(id)} \u2014 Block ${blockNumOf(id)}${h.scores[id]?', now '+fmt(h.scores[id])+'/4 ('+bandOf(h.scores[id])+')':', not yet scored'}`);
+      if(nt)lines.push(`   \u21B3 ${nt}`);
+    });
     lines.push('');
   }
   if(s.note)lines.push(s.note,'');
   lines.push(`\u21A9 Backing up: ${s.back||0} reps \u00b7 \u27F2 Flexing: ${s.flex||0} reps`);
   lines.push('');
   lines.push('Block scores: '+s.snapshot);
-  const cbn=currentBlock(h.scores,DB.gate);
-  if(cbn<BLOCKS.length){
-    const cn=BLOCKS[cbn].skills.filter(sk=>noteOf(h,sk.id));
-    if(cn.length){
-      lines.push('');
-      lines.push('Current focus notes:');
-      cn.forEach(sk=>lines.push(`\u2022 ${sk.name}: ${noteOf(h,sk.id)}`));
-    }
-  }
-  const cb=cbn;
+  const cb=currentBlock(h.scores,DB.gate);
+  const totalPts=BLOCKS.reduce((t,_,i)=>t+blockTotal(h.scores,i),0);
+  lines.push(`Overall progress: ${fmt(totalPts)}/${BLOCKS.length*16} points`);
   lines.push(cb>=BLOCKS.length?'\u{1F3C6} Program complete!':`Next up: ${BLOCKS[cb].title}`);
   return lines.join('\n');
 }
